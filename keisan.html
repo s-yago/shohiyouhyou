@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ViVi不動産｜諸費用 計算ツール＆マニュアル</title>
+<style>
+:root{
+  --navy:#16294B;--navy-d:#0E1B33;--navy-l:#2A4373;
+  --gold:#C8A64B;--orange:#E8842B;--orange-d:#B85F14;
+  --ink:#1A1D23;--mid:#4A5568;--soft:#7B8496;
+  --line:#DFE3EA;--line-s:#C6CCD8;
+  --bg:#F4F6F9;--card:#FFF;--tint:#EEF2F8;
+  --warn-bg:#FDF3E4;--warn-ln:#E8B96B;--warn-tx:#8A5A0A;
+  --ok-bg:#EAF4EE;--ok-ln:#8CC0A0;--ok-tx:#1F6B3F;
+  --ng-bg:#FBECEA;--ng-ln:#DFA098;--ng-tx:#9A3323;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.8}
+.num{font-family:"Roboto Mono",monospace;font-variant-numeric:tabular-nums}
+header{background:var(--navy);color:#fff;position:sticky;top:0;z-index:50}
+header .in{max-width:960px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:18px;font-weight:700;letter-spacing:.04em}
+header .sub{font-size:12px;color:#A9B6CE}
+header .sp{flex:1}
+.btn{background:var(--orange);color:#fff;border:0;border-radius:6px;padding:9px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
+.btn:hover{background:var(--orange-d)}
+.btn.g{background:#fff;color:var(--navy);border:1px solid var(--line-s)}
+.tabs{background:var(--navy-d);overflow-x:auto}
+.tabs .in{max-width:960px;margin:0 auto;display:flex;gap:0;min-width:max-content}
+.tabs button{background:transparent;border:0;border-bottom:3px solid transparent;color:#A9B6CE;padding:11px 15px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tabs button.on{color:#fff;border-bottom-color:var(--orange);background:rgba(255,255,255,.06)}
+.wrap{max-width:960px;margin:0 auto;padding:18px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.chd{background:var(--tint);border-bottom:1px solid var(--line);padding:11px 16px;display:flex;align-items:center;gap:10px}
+.chd h2{font-size:17px;font-weight:700;color:var(--navy)}
+.cbd{padding:16px}
+h3.sec{font-size:17px;font-weight:700;color:var(--navy);margin:22px 0 9px;padding-left:10px;border-left:5px solid var(--orange)}
+h3.sec:first-child{margin-top:0}
+h4{font-size:15px;font-weight:700;margin:16px 0 6px;color:var(--navy-l)}
+p{margin-bottom:10px}
+ul,ol{margin:0 0 10px 22px}
+li{margin-bottom:5px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}}
+.fld label{display:block;font-size:13px;color:var(--mid);margin-bottom:4px;font-weight:700}
+input,select{width:100%;padding:9px 11px;border:1px solid var(--line-s);border-radius:6px;font-size:16px;font-family:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:2px solid var(--navy-l);outline-offset:-1px}
+.unit{display:flex;align-items:center;gap:6px}
+.unit .u{font-size:13px;color:var(--soft);flex:none}
+.seg{display:flex;border:1px solid var(--line-s);border-radius:6px;overflow:hidden}
+.seg button{flex:1;padding:9px 6px;background:#fff;border:0;border-right:1px solid var(--line);font-size:14px;cursor:pointer;font-family:inherit;color:var(--mid)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--navy);color:#fff;font-weight:700}
+.msg{border-radius:8px;padding:12px 14px;font-size:14.5px;margin-bottom:14px;line-height:1.75}
+.msg.o{background:var(--ok-bg);border:1px solid var(--ok-ln);color:var(--ok-tx)}
+.msg.w{background:var(--warn-bg);border:1px solid var(--warn-ln);color:var(--warn-tx)}
+.msg.n{background:var(--ng-bg);border:1px solid var(--ng-ln);color:var(--ng-tx)}
+.msg b{font-weight:700}
+table{width:100%;border-collapse:collapse;margin-bottom:12px}
+th,td{padding:8px 11px;border:1px solid var(--line-s);font-size:15px;text-align:left;vertical-align:top}
+th{background:var(--tint);font-weight:700;color:var(--navy)}
+td.n,th.n{text-align:right;font-family:"Roboto Mono",monospace;font-variant-numeric:tabular-nums}
+.res{background:var(--navy);color:#fff;border-radius:9px;padding:16px;margin:14px 0}
+.res .ttl{font-size:13px;color:#A9B6CE;font-weight:700;margin-bottom:8px;letter-spacing:.05em}
+.res .big{font-size:30px;font-weight:700;font-family:"Roboto Mono",monospace;line-height:1.3}
+.res .big .yen{font-size:17px;margin-left:4px}
+.res .sub{font-size:13.5px;color:#C4D0E4;margin-top:6px;line-height:1.7}
+.res.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.res.two{grid-template-columns:1fr}}
+.steps{border:1px solid var(--line-s);border-radius:8px;overflow:hidden;margin:12px 0}
+.steps .st{padding:11px 14px;border-bottom:1px solid var(--line);font-size:14.5px;background:#fff}
+.steps .st:last-child{border-bottom:0}
+.steps .st .lb{font-size:12.5px;color:var(--orange-d);font-weight:700;display:block;margin-bottom:2px}
+.steps .st .fm{font-family:"Roboto Mono",monospace;font-size:14.5px;color:var(--navy);word-break:break-all}
+.steps .st.fin{background:#FCEDDC}
+.q{border:1px solid var(--line-s);border-radius:8px;margin-bottom:9px;background:#fff}
+.q summary{padding:11px 14px;cursor:pointer;font-weight:700;font-size:15px;color:var(--navy)}
+.q .in{padding:0 14px 14px;font-size:14.5px}
+.pane{display:none}
+.pane.on{display:block}
+code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mono",monospace;font-size:14px}
+.kbd{display:inline-block;background:var(--navy);color:#fff;border-radius:4px;padding:1px 8px;font-size:13px;font-weight:700;margin:0 2px}
+</style>
+</head>
+<body>
+<header><div class="in">
+ <div><h1>諸費用 計算ツール ＆ マニュアル</h1><div class="sub">ViVi不動産株式会社　社内用</div></div>
+ <div class="sp"></div>
+ <a class="btn g" href="./">諸費用表を開く</a>
+</div></header>
+
+<div class="tabs"><div class="in" id="tabs">
+ <button data-p="manual" class="on">使い方マニュアル</button>
+ <button data-p="kotei">固定資産税 日割精算</button>
+ <button data-p="touki">登録免許税（所有権移転）</button>
+ <button data-p="kanri">管理費等 精算金</button>
+ <button data-p="anbun">土地建物 按分</button>
+</div></div>
+
+<div class="wrap">
+
+<!-- ============ マニュアル ============ -->
+<div class="pane on" id="p_manual">
+<div class="card"><div class="chd"><h2>諸費用表の使い方</h2></div><div class="cbd">
+
+<div class="msg o">この資料は、お客様に「この物件を買うといくらかかるのか」「毎月いくら払うのか」をお伝えするためのものです。金額はすべて概算です。確定額をお約束するものではないことを、必ず口頭でもお伝えしてください。</div>
+
+<h3 class="sec">1. 案件情報を選ぶ</h3>
+<p><b>物件種別</b>で、マンション・一戸建・土地のどれかを選びます。選んだ種別に応じて、下の諸費用の項目が自動で入れ替わります。マンションなら管理費等清算金と管理基金、一戸建なら表示登記費用と防蟻費用、土地なら解体費用と地目変更費用が出ます。</p>
+<p><b>売主の区分</b>は、売主が個人か法人（課税事業者）かです。法人物件を選ぶと「うち建物消費税額」の欄が出ます。ここに消費税額を入れると、仲介手数料をその分を除いた税抜価格で計算します。法人物件は一戸建にもマンションにもあるので、種別とは別に選ぶ形にしています。</p>
+<p><b>お支払いの方法</b>で「現金でご購入」を選ぶと、借入に関する諸費用がまるごと消えます。保証料・団信・金銭消費貸借契約の印紙・電子契約手数料・抵当権設定費用・ローン取扱手数料が対象です。</p>
+
+<h3 class="sec">2. 金額を入れる</h3>
+<table>
+<tr><th style="width:34%">項目</th><th>入れ方</th></tr>
+<tr><td>売買金額</td><td>税込の販売価格をそのまま。</td></tr>
+<tr><td>リノベーション工事費</td><td><b>予備費を含めた金額</b>を入れます。下の諸費用欄と連動しているので、どちらで入力しても同じです。</td></tr>
+<tr><td>自己資金</td><td>頭金として入れる金額。残りが自動で借入額になります。</td></tr>
+<tr><td>固定資産税等 年額</td><td>課税明細書の固定資産税＋都市計画税の合計。清算金の初期値になります。</td></tr>
+<tr><td>仲介手数料の割引</td><td>5％OFFのお客様は切り替えてください。800万円以下の一律330,000円にも割引が効きます。</td></tr>
+<tr><td>契約の方法</td><td>売買契約は紙が既定、金銭消費貸借契約は電子が既定です。印紙代がここで変わります。</td></tr>
+</table>
+
+<h3 class="sec">3. 借入条件を選ぶ</h3>
+<p>金融機関・金利タイプ・借入期間を選ぶと、金利がスプレッドシートから自動で入ります。画面上部の帯が<b>緑色</b>なら連携できています。グレーのままなら金利が手入力になるので、営業事務に配布リンクを聞いてください。</p>
+<p>金利は直接書き換えることもできます。優遇後の金利がマスタと違う場合は、この欄で上書きしてください。</p>
+
+<h3 class="sec">4. 諸費用を調整する</h3>
+<p>各項目は自動計算です。物件によって金額が違う場合は<span class="kbd">入力</span>に切り替えると、その時点の自動計算値が初期値として入るので、そこから直せます。切り替えても自動計算の値は隣の列に残るので、いくらズレているかが分かります。</p>
+<p>解体費用・地目変更費用・管理費等清算金・管理基金の4つは自動計算する材料がないので、最初から入力欄だけになっています。</p>
+<p><b>その他の項目</b>は「＋ その他の項目を追加」で何行でも足せます。項目名を書くとそのまま帳票に出ます。使わない行は削除ボタンで消してください。空欄のまま残すと「その他 0円」と印刷されます。</p>
+
+<h3 class="sec">5. 出力する内容を決める</h3>
+<p>4つのチェックはすべて初期状態でオフです。物件ページに載せる説明用なら、オフのまま1枚で出すのが基本です。</p>
+<ul>
+<li><b>金利プランを3つ比較する</b> … 2枚目に他行との比較表が付きます。銀行を迷っているお客様向け。</li>
+<li><b>返済負担率を表示する</b> … 年収の入力欄が出ます。審査金利3.0％で計算し、35％を超えると赤字で出ます。事前審査前の目安に。</li>
+<li><b>住宅ローン控除の目安を表示する</b> … 一般の既存住宅（借入限度2,000万円）での初年度目安です。認定住宅は別枠なので使えません。</li>
+<li><b>返済予定表を付ける</b> … 別ページで全回分を印刷します。</li>
+</ul>
+
+<h3 class="sec">6. 特記事項を書く</h3>
+<p>その物件だけの事情を書く欄です。給湯器の交換履歴、修繕積立金の改定予定、見積り提示の予定など。改行はそのまま出ます。空欄なら印刷されません。</p>
+
+<h3 class="sec">7. 印刷する</h3>
+<p>右上の<span class="kbd">印刷 / PDF</span>を押します。A4縦1枚に収まります。初回だけ、ブラウザの印刷設定で<b>「背景のグラフィック」をオンに</b>してください。オフだと総額や借入額の色分けが飛びます。</p>
+
+<h3 class="sec">8. 案件を保存する</h3>
+<p><span class="kbd">案件の保存・読込</span>で、入力内容をそのまま保存できます。40件まで残ります。保存先はその端末のブラウザなので、<b>別のパソコンからは開けません</b>。共有したいときはPDFにして送ってください。</p>
+
+<h3 class="sec">よくある質問</h3>
+
+<details class="q"><summary>金利の帯がグレーのままです</summary><div class="in">
+金利マスタと連携できていません。配布リンク（<code>?sheet=</code> が付いた長いURL）を一度開けば、その端末では以後ずっと自動で読み込まれます。営業事務に聞いてください。
+</div></details>
+
+<details class="q"><summary>借入額が入力した金額とぴったり合いません</summary><div class="in">
+借入額は10万円単位に切り上げています。また、諸費用をローンに含めると借入額が増え、借入額が増えると事務手数料や保証料も増えます。この関係を計算で収束させているので、手計算とは数百円〜数万円ずれることがあります。
+</div></details>
+
+<details class="q"><summary>保証料が0円になっています</summary><div class="in">
+北陸銀行は保証料が金利に含まれる方式、ろうきん・富山第一は金融機関負担なので0円です。間違いではありません。「その他（手入力）」を選んだときだけ、借入額×2.06％（35年基準）で計算します。
+</div></details>
+
+<details class="q"><summary>2枚目に流れてしまいました</summary><div class="in">
+特記事項が長いか、その他の項目を増やしすぎています。特記事項は8行程度までが目安です。
+</div></details>
+
+<details class="q"><summary>登記費用や保険料の金額は正確ですか</summary><div class="in">
+すべて概算です。所有権移転費用は「マンション＝価格×0.2％＋10万円」「一戸建・土地＝価格×1％＋10万円」で出しています。正確な金額が必要なときは、このページの<b>登録免許税タブ</b>で評価額から計算するか、司法書士に見積を取ってください。
+</div></details>
+
+</div></div>
+</div>
+
+<!-- ============ 固定資産税 ============ -->
+<div class="pane" id="p_kotei">
+<div class="card"><div class="chd"><h2>固定資産税・都市計画税 日割精算ツール</h2></div><div class="cbd">
+
+<div class="msg w"><b>なぜ精算するのか。</b>固定資産税は、その年の<b>1月1日時点の所有者</b>に1年分の納税義務があります。年の途中で売買しても、納税通知書は売主に届き続けます。そこで、決済日以降の分を買主が売主に支払って調整します。これは税金の納付ではなく、<b>売主買主の間の私的な清算</b>です。法律上の義務ではなく、商慣習です。</div>
+
+<div class="grid g3">
+ <div class="fld"><label>年税額（固定資産税＋都市計画税）</label><div class="unit"><input type="number" id="k_tax" value="98000" oninput="calcKotei()"><span class="u">円</span></div></div>
+ <div class="fld"><label>決済日（引渡日）</label><input type="date" id="k_date" onchange="calcKotei()"></div>
+ <div class="fld"><label>起算日</label>
+  <div class="seg" id="k_seg"><button data-v="1" class="on">1月1日</button><button data-v="4">4月1日</button></div>
+ </div>
+</div>
+<div class="grid g3" style="margin-top:12px">
+ <div class="fld"><label>決済日当日の負担</label>
+  <div class="seg" id="k_seg2"><button data-v="buy" class="on">買主</button><button data-v="sell">売主</button></div>
+ </div>
+ <div class="fld"><label>端数処理</label>
+  <div class="seg" id="k_seg3"><button data-v="floor" class="on">切り捨て</button><button data-v="round">四捨五入</button></div>
+ </div>
+ <div class="fld"><label>翌年度分も精算する</label>
+  <div class="seg" id="k_seg4"><button data-v="0" class="on">しない</button><button data-v="1">する（1年分を加算）</button></div>
+ </div>
+</div>
+<div class="grid g2" style="margin-top:12px">
+ <div class="fld" id="k_wrapNext" style="display:none"><label>翌年度の年税額（分からなければ当年と同額のまま）</label><div class="unit"><input type="number" id="k_next" value="98000" oninput="calcKotei()"><span class="u">円</span></div></div>
+</div>
+<div class="msg w" id="k_nextNote" style="display:none;margin-top:12px"><b>翌年度分を精算するのはどんなときか。</b>年末に決済すると、所有権移転登記が完了するのが年明けになることがあります。固定資産税は<b>1月1日時点の登記名義人</b>に課税されるので、この場合は翌年度も売主に納税通知が届いてしまいます。売主は住んでいない物件の税金を1年分払うことになるため、<b>翌年度の1年分全額を買主が売主に支払う</b>という精算をします。<br>逆に、年内に登記まで完了して1月1日時点の名義が買主になっていれば、翌年度は買主に直接課税されるので、この精算は不要です。<b>登記が年内に終わるかどうか</b>で決まります。司法書士に確認してください。</div>
+
+<div id="k_res"></div>
+
+<h3 class="sec">計算の考え方</h3>
+<div id="k_steps"></div>
+
+<h3 class="sec">押さえておくこと</h3>
+<h4>起算日で金額が変わります</h4>
+<p>1月1日起算と4月1日起算では、買主の負担額が3か月分ほど変わります。<b>富山県では1月1日起算が一般的</b>ですが、これは慣習であって決まりではありません。必ず売買契約書に明記してください。「関東は1月1日、関西は4月1日」と言われますが、当事者の合意が優先します。</p>
+
+<h4>年税額をどこで確認するか</h4>
+<p>売主から<b>納税通知書（課税明細書）</b>を預かって、固定資産税と都市計画税の年税額を合計します。市街化調整区域など都市計画税がかからない地域もあるので、明細を見て判断してください。</p>
+
+<h4>1月1日〜決済日の間に売買があるとき</h4>
+<p>1月1日起算の場合、1〜3月の決済でも「その年の1月1日から12月31日まで」を基準にします。ただし、<b>1月1日時点ではまだ売主が所有者だが、その年の納税通知書は4〜5月に届く</b>点に注意してください。決済が1〜3月だと、納税通知書がまだ届いておらず年税額が確定していません。この場合は<b>前年度の税額で仮精算し、確定後に再精算する</b>か、前年度税額で確定とするかを契約書で決めます。</p>
+
+<h4>年末決済のときの翌年度分</h4>
+<p>12月下旬に決済すると、所有権移転登記が年明けになることがあります。固定資産税は<b>1月1日時点の登記名義人</b>に課税されるので、この場合は翌年度も売主に納税通知が届きます。売主はすでに手放した物件の税金を1年分負担することになるため、<b>翌年度の1年分全額を買主が売主に支払う</b>精算をします。上の「翌年度分も精算する」を「する」に切り替えてください。</p>
+<p>年内に登記まで完了していれば、翌年度は買主に直接課税されるのでこの精算は不要です。<b>登記が年内に終わるかどうか</b>が分かれ目なので、年末の決済では必ず司法書士に確認してください。なお翌年度の税額はまだ確定していないので、当年度と同額で計算するのが一般的です。</p>
+
+<h4>新築・滅失があった年</h4>
+<p>更地を買って建物を建てた、または建物を解体した年は、翌年の税額が大きく変わります。1月1日時点の現況で決まるので、解体を年内にするか年明けにするかで住宅用地の特例（最大6分の1）が効くかどうかが変わります。売主にも買主にも影響するので、解体時期は必ず確認してください。</p>
+
+<div class="msg n"><b>よくある間違い</b><br>
+・都市計画税を足し忘れる（固定資産税だけで計算してしまう）<br>
+・うるう年に365日で割ってしまう<br>
+・決済日当日をどちらが持つか決めずに計算する（1日分ずれます）<br>
+・起算日を確認せずに前例をコピーする<br>
+・年末決済で、登記が年内に終わるかを確認しないまま当年度分だけ精算する</div>
+
+</div></div>
+</div>
+
+<!-- ============ 登録免許税 ============ -->
+<div class="pane" id="p_touki">
+<div class="card"><div class="chd"><h2>登録免許税 計算ツール（所有権移転・抵当権設定）</h2></div><div class="cbd">
+
+<div class="msg w"><b>課税標準は売買価格ではありません。</b>登録免許税は<b>固定資産税評価額</b>にかけて計算します。売買価格の1％といった概算とは根拠が違うので、正確に出すには課税明細書か評価証明書が必要です。抵当権設定だけは<b>借入額（債権額）</b>が課税標準です。</div>
+
+<div class="grid g2">
+ <div class="fld"><label>土地の固定資産税評価額</label><div class="unit"><input type="number" id="t_land" value="6000000" oninput="calcTouki()"><span class="u">円</span></div><div style="font-size:12.5px;color:var(--soft);margin-top:3px">マンションは「敷地全体の評価額×敷地権割合」</div></div>
+ <div class="fld"><label>建物の固定資産税評価額</label><div class="unit"><input type="number" id="t_bldg" value="4000000" oninput="calcTouki()"><span class="u">円</span></div></div>
+</div>
+<div class="grid g2" style="margin-top:12px">
+ <div class="fld"><label>借入額（債権額）</label><div class="unit"><input type="number" id="t_loan" value="20000000" oninput="calcTouki()"><span class="u">円</span></div><div style="font-size:12.5px;color:var(--soft);margin-top:3px">現金購入なら0</div></div>
+ <div class="fld"><label>住宅用家屋証明書</label>
+  <div class="seg" id="t_seg"><button data-v="1" class="on">取得する</button><button data-v="0">取得しない</button></div>
+  <div style="font-size:12.5px;color:var(--soft);margin-top:3px">建物と抵当権の税率が下がります</div>
+ </div>
+</div>
+
+<div id="t_res"></div>
+
+<h3 class="sec">計算の考え方</h3>
+<div id="t_steps"></div>
+
+<h3 class="sec">税率の表</h3>
+<table>
+<tr><th>登記の種類</th><th>課税標準</th><th class="n">本則</th><th class="n">軽減後</th></tr>
+<tr><td>土地の所有権移転</td><td>固定資産税評価額</td><td class="n">2.0％</td><td class="n">1.5％</td></tr>
+<tr><td>建物（中古住宅）の所有権移転</td><td>固定資産税評価額</td><td class="n">2.0％</td><td class="n">0.3％</td></tr>
+<tr><td>抵当権の設定</td><td>借入額（債権額）</td><td class="n">0.4％</td><td class="n">0.1％</td></tr>
+</table>
+<div class="msg w">土地の1.5％は期限のある軽減措置です。建物0.3％と抵当権0.1％は<b>住宅用家屋証明書</b>を出したときだけ適用されます。軽減措置の期限は延長・変更されることがあるので、年に一度は最新の税率を確認してください。</div>
+
+<h3 class="sec">住宅用家屋証明書の要件</h3>
+<p>市区町村が発行します。次の条件をすべて満たす必要があります。</p>
+<ul>
+<li><b>自己の居住用</b>であること。投資用・セカンドハウスは対象外です</li>
+<li>床面積が<b>50㎡以上</b>（登記簿上の面積。マンションは内法面積なので、パンフレットの壁芯面積より小さくなります。50㎡ぎりぎりの物件は要注意）</li>
+<li>区分建物（マンション）は<b>耐火・準耐火建築物</b>であること</li>
+<li><b>新耐震基準に適合</b>していること。1982年（昭和57年）1月1日以降に新築されたものは、書類なしで適合とみなされます。それ以前の建物は耐震基準適合証明書などが必要です</li>
+<li>取得後<b>1年以内</b>に登記すること</li>
+</ul>
+<div class="msg n"><b>ここでミスが出ます。</b>マンションの登記簿面積が49.8㎡だった、というケース。パンフレットでは52㎡と書いてあっても、登記簿は内法なので足りません。事前に登記事項証明書で確認してください。証明書が取れないと建物の税率が0.3％から2.0％に跳ね上がり、抵当権も0.4％になります。</div>
+
+<h3 class="sec">端数処理のルール</h3>
+<ol>
+<li><b>課税標準</b>は1,000円未満を切り捨てます。1,000円未満のときは1,000円とします</li>
+<li>税率をかけた<b>税額</b>は100円未満を切り捨てます。1,000円未満のときは1,000円とします</li>
+<li>土地と建物は<b>それぞれ別に</b>計算します。合算してから税率をかけません</li>
+</ol>
+
+<div class="msg o"><b>司法書士報酬は別です。</b>このツールで出るのは登録免許税（実費）だけです。実際の請求は「登録免許税＋司法書士報酬＋登記事項証明書代など」になります。報酬は事務所によって幅がありますが、所有権移転と抵当権設定で合わせて7〜12万円程度が目安です。</div>
+
+</div></div>
+</div>
+
+<!-- ============ 管理費等 ============ -->
+<div class="pane" id="p_kanri">
+<div class="card"><div class="chd"><h2>管理費・修繕積立金 精算金ツール</h2></div><div class="cbd">
+
+<div class="msg w"><b>考え方は固定資産税と同じです。</b>管理費と修繕積立金は月単位で引き落とされます。決済月の分はすでに売主が払っているので、決済日以降の分を買主が売主に返します。日割の分母は<b>その月の日数</b>です（28〜31日）。</div>
+
+<div class="grid g3">
+ <div class="fld"><label>管理費</label><div class="unit"><input type="number" id="m_kanri" value="9800" oninput="calcKanri()"><span class="u">円/月</span></div></div>
+ <div class="fld"><label>修繕積立金</label><div class="unit"><input type="number" id="m_shuzen" value="11200" oninput="calcKanri()"><span class="u">円/月</span></div></div>
+ <div class="fld"><label>その他（駐車場・専用庭など）</label><div class="unit"><input type="number" id="m_other" value="0" oninput="calcKanri()"><span class="u">円/月</span></div></div>
+</div>
+<div class="grid g3" style="margin-top:12px">
+ <div class="fld"><label>決済日（引渡日）</label><input type="date" id="m_date" onchange="calcKanri()"></div>
+ <div class="fld"><label>決済日当日の負担</label>
+  <div class="seg" id="m_seg"><button data-v="buy" class="on">買主</button><button data-v="sell">売主</button></div>
+ </div>
+ <div class="fld"><label>引き落としの時期</label>
+  <div class="seg" id="m_seg2"><button data-v="pre" class="on">当月分を当月に</button><button data-v="post">翌月分を当月に</button></div>
+ </div>
+</div>
+
+<div id="m_res"></div>
+
+<h3 class="sec">計算の考え方</h3>
+<div id="m_steps"></div>
+
+<h3 class="sec">押さえておくこと</h3>
+
+<h4>引き落としの時期を必ず確認する</h4>
+<p>管理組合によって「当月分を当月27日に引き落とし」「翌月分を当月27日に引き落とし（前払い）」など様々です。<b>前払いの場合、売主は決済月の翌月分まですでに払っている</b>ので、精算範囲が1か月ずれます。管理会社に発行してもらう<b>重要事項に係る調査報告書</b>で確認してください。この書類には管理費・修繕積立金の額、滞納の有無、引き落とし日、修繕積立金の総額などが書かれています。</p>
+
+<h4>滞納があるとき</h4>
+<p>売主に滞納があると、<b>その債務は買主に承継されます</b>（区分所有法8条）。管理組合は新しい所有者にも請求できます。滞納が判明したら、決済時に売買代金から差し引いて管理組合に直接支払う処理をしてください。精算金の計算とは別の話です。</p>
+
+<h4>修繕積立金の改定予定</h4>
+<p>長期修繕計画で値上げが決まっている場合、決済後に負担が増えます。精算金の計算には影響しませんが、<b>お客様への説明義務があります</b>。諸費用表の特記事項欄に書いてください。一時金の徴収予定がある場合も同様です。</p>
+
+<h4>駐車場・駐輪場</h4>
+<p>駐車場は管理組合との契約なので、売主の解約と買主の新規契約が必要な場合と、承継できる場合があります。空きがなくて借りられないこともあるので、事前に確認してください。使用料は精算対象に含めるのが一般的です。</p>
+
+<div class="msg n"><b>よくある間違い</b><br>
+・30日で固定して割ってしまう（2月は28日、31日の月もあります）<br>
+・引き落としが前払いか後払いか確認しない<br>
+・駐車場使用料を入れ忘れる<br>
+・滞納分を精算金と混同する</div>
+
+</div></div>
+</div>
+
+<!-- ============ 按分 ============ -->
+<div class="pane" id="p_anbun">
+<div class="card"><div class="chd"><h2>マンション 土地建物 按分ツール</h2></div><div class="cbd">
+
+<div class="msg w"><b>なぜ按分するのか。</b>マンションの売買価格は土地と建物の合計で表示されますが、次の場面では内訳が必要になります。<br>
+・売主が課税事業者のとき、<b>建物にだけ消費税</b>がかかる<br>
+・投資用として買う場合の<b>減価償却</b>の計算<br>
+・買主が事業者のときの<b>消費税の仕入税額控除</b><br>
+按分方法にはいくつかありますが、<b>固定資産税評価額の比率で按分する方法</b>が最も一般的で、税務上も合理的と認められやすい方法です。</p></div>
+
+<div class="grid g2">
+ <div class="fld"><label>売買総額（税込）</label><div class="unit"><input type="number" id="a_total" value="20000000" oninput="calcAnbun()"><span class="u">円</span></div></div>
+ <div class="fld"><label>売主は課税事業者か</label>
+  <div class="seg" id="a_seg"><button data-v="0" class="on">個人（非課税）</button><button data-v="1">法人・課税事業者</button></div>
+ </div>
+</div>
+<div class="grid g3" style="margin-top:12px">
+ <div class="fld"><label>敷地全体の土地評価額</label><div class="unit"><input type="number" id="a_land" value="480000000" oninput="calcAnbun()"><span class="u">円</span></div></div>
+ <div class="fld"><label>敷地権割合</label><input type="text" id="a_ratio" value="5230/480000" oninput="calcAnbun()" placeholder="5230/480000"><div style="font-size:12.5px;color:var(--soft);margin-top:3px">登記簿の表記をそのまま。「0.0109」でも可</div></div>
+ <div class="fld"><label>建物（専有部分）の評価額</label><div class="unit"><input type="number" id="a_bldg" value="4200000" oninput="calcAnbun()"><span class="u">円</span></div></div>
+</div>
+
+<div id="a_res"></div>
+
+<h3 class="sec">計算の考え方</h3>
+<div id="a_steps"></div>
+
+<h3 class="sec">課税明細書のどこを見るか</h3>
+<p>マンションの課税明細書は、区分所有者ごとに<b>すでに持分で按分された金額</b>が載っている場合と、<b>敷地全体の金額</b>が載っている場合があります。</p>
+<table>
+<tr><th style="width:38%">明細書の表記</th><th>このツールでの入れ方</th></tr>
+<tr><td>「土地」の評価額が数億円</td><td>敷地全体の額です。敷地権割合を入れて按分してください</td></tr>
+<tr><td>「土地」の評価額が数百万円</td><td>すでに持分按分済みです。敷地権割合に <code>1</code> と入れてください</td></tr>
+<tr><td>「家屋」の評価額</td><td>専有部分の額です。そのまま入れてください</td></tr>
+</table>
+<p>敷地権割合は<b>登記事項証明書の表題部</b>に「敷地権の割合　5230分の480000」のような形で載っています。分子と分母を間違えないでください。分子が自分の持分です。</p>
+
+<h3 class="sec">他の按分方法</h3>
+<table>
+<tr><th style="width:30%">方法</th><th>内容と注意点</th></tr>
+<tr><td>固定資産税評価額比（推奨）</td><td>公的な評価額を使うので客観性が高い。もっとも一般的</td></tr>
+<tr><td>売買契約書に記載</td><td>契約書で土地・建物の内訳を明示していれば、原則その金額。ただし著しく不合理な配分は否認されることがあります</td></tr>
+<tr><td>消費税額から逆算</td><td>売主が課税事業者で契約書に消費税額の記載があれば、<code>消費税額 ÷ 0.1</code> が建物価格。もっとも確実です</td></tr>
+<tr><td>建物の標準的建築価額</td><td>国税庁の表から新築時の建築価額を求め、減価償却して建物価格とする。古い物件で評価額が実態と離れているときに使います</td></tr>
+</table>
+
+<div class="msg o"><b>契約書に消費税額が書いてあれば、それが正解です。</b>売主が課税事業者の物件で契約書に「うち消費税○○円」とあれば、按分計算をする必要はありません。その金額から建物価格が確定します。按分が必要なのは、内訳の記載がないときです。</div>
+
+<div class="msg n"><b>よくある間違い</b><br>
+・敷地権割合の分子と分母を逆にする<br>
+・すでに持分按分済みの評価額に、さらに敷地権割合をかけてしまう<br>
+・税込総額から按分した建物価格を、そのまま建物本体価格として扱う（消費税を抜き忘れる）<br>
+・土地には消費税がかからないことを忘れる</div>
+
+</div></div>
+</div>
+
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const yen=n=>Math.round(n||0).toLocaleString('ja-JP');
+const numv=id=>{const e=$(id);const v=e?parseFloat(e.value):0;return isNaN(v)?0:v;};
+const D=(y,m,d)=>new Date(Date.UTC(y,m,d));
+const days=(a,b)=>Math.round((b-a)/86400000);
+const parseD=s=>{const m=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s||'');return m?D(+m[1],+m[2]-1,+m[3]):null;};
+const fmtD=d=>d?`${d.getUTCFullYear()}年${d.getUTCMonth()+1}月${d.getUTCDate()}日`:'―';
+const leap=y=>(y%4===0&&y%100!==0)||y%400===0;
+const steps=arr=>`<div class="steps">${arr.map(s=>`<div class="st ${s[2]?'fin':''}"><span class="lb">${s[0]}</span><span class="fm">${s[1]}</span></div>`).join('')}</div>`;
+const box=(t,v,sub)=>`<div class="res"><div class="ttl">${t}</div><div class="big">${v}<span class="yen">円</span></div>${sub?`<div class="sub">${sub}</div>`:''}</div>`;
+
+/* タブ */
+$('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+ $('tabs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+ document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p_'+b.dataset.p));
+ window.scrollTo({top:0,behavior:'smooth'});});
+function segInit(id,fn,onchange){
+ $(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  $(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));fn();});}
+const segv=id=>{const b=$(id).querySelector('button.on');return b?b.dataset.v:'';};
+
+/* ===== 1. 固定資産税 ===== */
+function calcKotei(){
+ const tax=numv('k_tax'),dt=parseD($('k_date').value);
+ if(!dt||tax<=0){$('k_res').innerHTML='<div class="msg n">年税額と決済日を入力してください。</div>';$('k_steps').innerHTML='';return;}
+ const kisan=segv('k_seg'),owner=segv('k_seg2'),hasu=segv('k_seg3');
+ let st,en;
+ if(kisan==='1'){st=D(dt.getUTCFullYear(),0,1);en=D(dt.getUTCFullYear(),11,31);}
+ else{const y=dt.getUTCMonth()>=3?dt.getUTCFullYear():dt.getUTCFullYear()-1;st=D(y,3,1);en=D(y+1,2,31);}
+ const total=days(st,en)+1;
+ const bstart=owner==='buy'?dt:D(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate()+1);
+ const bdays=Math.max(0,days(bstart,en)+1);
+ const sdays=total-bdays;
+ const raw=tax*bdays/total;
+ const nissuu=hasu==='floor'?Math.floor(raw):Math.round(raw);
+ const useNext=segv('k_seg4')==='1';
+ const nextTax=useNext?numv('k_next'):0;
+ const buy=nissuu+nextTax;
+ const sell=tax-nissuu;
+ $('k_wrapNext').style.display=useNext?'':'none';
+ $('k_nextNote').style.display=useNext?'':'none';
+ $('k_res').innerHTML=`<div class="res two">
+  <div><div class="ttl">買主のご負担（売主にお支払い）</div><div class="big">${yen(buy)}<span class="yen">円</span></div>
+   <div class="sub">当年度 ${fmtD(bstart)} 〜 ${fmtD(en)}　${bdays}日分 ＝ ${yen(nissuu)}円${useNext?`<br>翌年度 1年分 ＝ ${yen(nextTax)}円`:''}</div></div>
+  <div><div class="ttl">売主のご負担（当年度）</div><div class="big">${yen(sell)}<span class="yen">円</span></div>
+   <div class="sub">${fmtD(st)} 〜 ${fmtD(owner==='buy'?D(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate()-1):dt)}　${sdays}日分</div></div>
+ </div>`;
+ const list=[
+  ['① 精算の対象期間を決める',`${kisan==='1'?'1月1日起算':'4月1日起算'} → ${fmtD(st)} 〜 ${fmtD(en)}　＝ ${total}日${leap(st.getUTCFullYear())&&kisan==='1'?'（うるう年）':''}`],
+  ['② 買主の負担日数を数える',`決済日当日は${owner==='buy'?'買主':'売主'}負担 → 買主の起算は ${fmtD(bstart)}　／　${fmtD(bstart)} 〜 ${fmtD(en)} ＝ ${bdays}日`],
+  ['③ 1日あたりの金額を出す',`${yen(tax)}円 ÷ ${total}日 ＝ ${(tax/total).toFixed(2)}円/日`],
+  ['④ 当年度の買主負担額',`${(tax/total).toFixed(2)}円 × ${bdays}日 ＝ ${raw.toFixed(2)}円 → ${hasu==='floor'?'切り捨て':'四捨五入'}して ${yen(nissuu)}円`,!useNext],
+  ['⑤ 売主の負担額（当年度）',`${yen(tax)}円 − ${yen(nissuu)}円 ＝ ${yen(sell)}円`]
+ ];
+ if(useNext)list.push(['⑥ 翌年度分を加算する',`1月1日時点の登記名義が売主のままになるため、翌年度 1年分 ${yen(nextTax)}円 を全額加算　／　${yen(nissuu)} ＋ ${yen(nextTax)} ＝ ${yen(buy)}円`,1]);
+ $('k_steps').innerHTML=steps(list);}
+segInit('k_seg',calcKotei);segInit('k_seg2',calcKotei);segInit('k_seg3',calcKotei);segInit('k_seg4',calcKotei);
+
+/* ===== 2. 登録免許税 ===== */
+const std=v=>{const x=Math.floor(v/1000)*1000;return x<1000?1000:x;};
+const tax100=v=>{const x=Math.floor(v/100)*100;return x<1000?1000:x;};
+function calcTouki(){
+ const land=numv('t_land'),bldg=numv('t_bldg'),loan=numv('t_loan'),cert=segv('t_seg')==='1';
+ const rL=1.5,rB=cert?0.3:2.0,rM=cert?0.1:0.4;
+ const sL=std(land),sB=std(bldg),sM=loan>0?std(loan):0;
+ const tL=land>0?tax100(sL*rL/100):0;
+ const tB=bldg>0?tax100(sB*rB/100):0;
+ const tM=loan>0?tax100(sM*rM/100):0;
+ const sum=tL+tB+tM;
+ $('t_res').innerHTML=box('登録免許税の合計',yen(sum),
+  `所有権移転 ${yen(tL+tB)}円　＋　抵当権設定 ${yen(tM)}円<br>司法書士報酬・登記事項証明書代などは含みません`)
+ +`<table><tr><th>登記</th><th class="n">課税標準</th><th class="n">税率</th><th class="n">税額</th></tr>
+  <tr><td>土地の所有権移転</td><td class="n">${yen(sL)}</td><td class="n">${rL}％</td><td class="n">${yen(tL)}</td></tr>
+  <tr><td>建物の所有権移転</td><td class="n">${yen(sB)}</td><td class="n">${rB}％</td><td class="n">${yen(tB)}</td></tr>
+  ${loan>0?`<tr><td>抵当権の設定</td><td class="n">${yen(sM)}</td><td class="n">${rM}％</td><td class="n">${yen(tM)}</td></tr>`:''}
+  <tr style="background:#FCEDDC;font-weight:700"><td>合計</td><td class="n">―</td><td class="n">―</td><td class="n">${yen(sum)}</td></tr></table>
+  ${cert?'<div class="msg o">住宅用家屋証明書を取得する前提です。建物0.3％・抵当権0.1％の軽減が適用されています。</div>':'<div class="msg n">住宅用家屋証明書なしの本則税率です。建物2.0％・抵当権0.4％。証明書が取れれば'+yen((tB-tax100(sB*0.3/100))+(loan>0?tM-tax100(sM*0.1/100):0))+'円安くなります。</div>'}`;
+ $('t_steps').innerHTML=steps([
+  ['① 課税標準を出す（1,000円未満切り捨て）',`土地 ${yen(land)} → ${yen(sL)}　／　建物 ${yen(bldg)} → ${yen(sB)}${loan>0?`　／　債権額 ${yen(loan)} → ${yen(sM)}`:''}`],
+  ['② 土地に税率をかける',`${yen(sL)} × ${rL}％ ＝ ${yen(sL*rL/100)} → 100円未満切り捨て ${yen(tL)}円`],
+  ['③ 建物に税率をかける',`${yen(sB)} × ${rB}％ ＝ ${yen(sB*rB/100)} → 100円未満切り捨て ${yen(tB)}円${cert?'（住宅用家屋証明あり）':'（証明なしの本則）'}`],
+  loan>0?['④ 抵当権設定',`${yen(sM)} × ${rM}％ ＝ ${yen(sM*rM/100)} → 100円未満切り捨て ${yen(tM)}円`]:['④ 抵当権設定','借入がないため0円'],
+  ['⑤ 合計',`${yen(tL)} ＋ ${yen(tB)}${loan>0?` ＋ ${yen(tM)}`:''} ＝ ${yen(sum)}円`,1]
+ ]);}
+segInit('t_seg',calcTouki);
+
+/* ===== 3. 管理費等 ===== */
+function calcKanri(){
+ const a=numv('m_kanri'),b=numv('m_shuzen'),c=numv('m_other'),tot=a+b+c;
+ const dt=parseD($('m_date').value);
+ if(!dt||tot<=0){$('m_res').innerHTML='<div class="msg n">金額と決済日を入力してください。</div>';$('m_steps').innerHTML='';return;}
+ const owner=segv('m_seg'),mode=segv('m_seg2');
+ const y=dt.getUTCFullYear(),mo=dt.getUTCMonth();
+ const dim=new Date(Date.UTC(y,mo+1,0)).getUTCDate();
+ const bstart=owner==='buy'?dt.getUTCDate():dt.getUTCDate()+1;
+ const bdays=Math.max(0,dim-bstart+1);
+ const raw=tot*bdays/dim;
+ const nissuu=Math.floor(raw);
+ const extra=mode==='post'?tot:0;
+ const sum=nissuu+extra;
+ $('m_res').innerHTML=box('買主のご負担（売主にお支払い）',yen(sum),
+  `${y}年${mo+1}月${bstart}日 〜 ${mo+1}月${dim}日　${bdays}日分 ＝ ${yen(nissuu)}円`
+  +(extra?`<br>前払いのため翌月分1か月 ${yen(extra)}円 を加算`:''))
+ +`<table><tr><th>内訳</th><th class="n">月額</th></tr>
+  <tr><td>管理費</td><td class="n">${yen(a)}</td></tr>
+  <tr><td>修繕積立金</td><td class="n">${yen(b)}</td></tr>
+  ${c>0?`<tr><td>その他（駐車場など）</td><td class="n">${yen(c)}</td></tr>`:''}
+  <tr style="font-weight:700"><td>月額合計</td><td class="n">${yen(tot)}</td></tr></table>`;
+ $('m_steps').innerHTML=steps([
+  ['① 月額を合計する',`${yen(a)} ＋ ${yen(b)}${c>0?` ＋ ${yen(c)}`:''} ＝ ${yen(tot)}円/月`],
+  ['② その月の日数を確認する',`${y}年${mo+1}月は ${dim}日${dim===29?'（うるう年の2月）':''}`],
+  ['③ 買主の負担日数を数える',`決済日当日は${owner==='buy'?'買主':'売主'}負担 → ${mo+1}月${bstart}日 〜 ${mo+1}月${dim}日 ＝ ${bdays}日`],
+  ['④ 日割で計算する',`${yen(tot)} ÷ ${dim}日 × ${bdays}日 ＝ ${raw.toFixed(2)}円 → 切り捨て ${yen(nissuu)}円`],
+  mode==='post'?['⑤ 前払い分を加える',`翌月分がすでに引き落とされているため ＋${yen(extra)}円`]:['⑤ 前払い分',`当月分を当月に引き落とす方式のため加算なし`],
+  ['⑥ 買主のご負担額',`${yen(sum)}円`,1]
+ ]);}
+segInit('m_seg',calcKanri);segInit('m_seg2',calcKanri);
+
+/* ===== 4. 按分 ===== */
+function parseRatio(s){
+ s=(s||'').trim();
+ const m=/^(\d+(?:\.\d+)?)\s*[\/分の]\s*(\d+(?:\.\d+)?)$/.exec(s.replace('分の','/'));
+ if(m){const a=parseFloat(m[1]),b=parseFloat(m[2]);if(a>0&&b>0)return a<b?a/b:b/a;}
+ const v=parseFloat(s);
+ return (!isNaN(v)&&v>0&&v<=1)?v:(!isNaN(v)&&v>1?1/v:null);}
+function calcAnbun(){
+ const total=numv('a_total'),landAll=numv('a_land'),bldg=numv('a_bldg');
+ const r=parseRatio($('a_ratio').value),taxable=segv('a_seg')==='1';
+ if(r===null||total<=0){$('a_res').innerHTML='<div class="msg n">売買総額と敷地権割合を確認してください。「5230/480000」または「0.0109」の形で入力します。</div>';$('a_steps').innerHTML='';return;}
+ const land=landAll*r;
+ const base=land+bldg;
+ if(base<=0){$('a_res').innerHTML='<div class="msg n">評価額を入力してください。</div>';$('a_steps').innerHTML='';return;}
+ const bRatio=bldg/base;
+ const bldgPrice=Math.round(total*bRatio);
+ const landPrice=total-bldgPrice;
+ const bldgNet=taxable?Math.round(bldgPrice/1.1):bldgPrice;
+ const vat=taxable?bldgPrice-bldgNet:0;
+ $('a_res').innerHTML=`<div class="res two">
+  <div><div class="ttl">土地の価格（消費税なし）</div><div class="big">${yen(landPrice)}<span class="yen">円</span></div>
+   <div class="sub">全体の ${((1-bRatio)*100).toFixed(2)}％</div></div>
+  <div><div class="ttl">建物の価格${taxable?'（税込）':''}</div><div class="big">${yen(bldgPrice)}<span class="yen">円</span></div>
+   <div class="sub">全体の ${(bRatio*100).toFixed(2)}％${taxable?`<br>本体 ${yen(bldgNet)}円 ＋ 消費税 ${yen(vat)}円`:''}</div></div>
+ </div>`
+ +(taxable?`<div class="msg w"><b>仲介手数料の基準額は ${yen(total-vat)}円</b>です（税込総額 ${yen(total)}円 − 消費税 ${yen(vat)}円）。手数料は税抜価格で計算します。</div>`
+  :`<div class="msg o">個人が売主のため、建物にも消費税はかかりません。仲介手数料は売買総額 ${yen(total)}円 を基準に計算します。</div>`);
+ $('a_steps').innerHTML=steps([
+  ['① 自分の持分の土地評価額を出す',`敷地全体 ${yen(landAll)}円 × 敷地権割合 ${(r).toFixed(8)} ＝ ${yen(land)}円`],
+  ['② 評価額の合計を出す',`土地 ${yen(land)} ＋ 建物 ${yen(bldg)} ＝ ${yen(base)}円`],
+  ['③ 建物の比率を求める',`${yen(bldg)} ÷ ${yen(base)} ＝ ${(bRatio*100).toFixed(4)}％`],
+  ['④ 売買総額を按分する',`建物 ${yen(total)} × ${(bRatio*100).toFixed(4)}％ ＝ ${yen(bldgPrice)}円　／　土地 ${yen(total)} − ${yen(bldgPrice)} ＝ ${yen(landPrice)}円`,!taxable],
+  taxable?['⑤ 建物から消費税を抜く',`${yen(bldgPrice)} ÷ 1.1 ＝ 本体 ${yen(bldgNet)}円　／　消費税 ${yen(vat)}円`,1]
+   :['⑤ 消費税','個人売主のため消費税はかかりません']
+ ]);}
+segInit('a_seg',calcAnbun);
+
+/* 起動 */
+(function(){
+ const t=new Date(),p=n=>String(n).padStart(2,'0');
+ const today=`${t.getFullYear()}-${p(t.getMonth()+1)}-${p(t.getDate())}`;
+ $('k_date').value=today;$('m_date').value=today;
+ calcKotei();calcTouki();calcKanri();calcAnbun();
+})();
+</script>
+</body>
+</html>
