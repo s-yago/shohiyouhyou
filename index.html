@@ -364,6 +364,7 @@ const FEE_A=[
  {k:'bougi',n:'防蟻費用',only:'kodate'},
  {k:'kaitai',n:'解体費用',only:'tochi',manual:1},
  {k:'chimoku',n:'地目変更費用',only:'tochi',manual:1},
+ {k:'hikikomi',n:'上下水道引込費用',only:'tochi',manual:1},
  {k:'inspect',n:'既存住宅状況調査（インスペクション）'},
  {k:'kasai',n:'火災・地震保険料（5年一括）',not:'tochi'}
 ];
@@ -415,6 +416,7 @@ function calcAR(){
  o.bougi=200000;d.bougi='床下の防蟻処理の目安';
  o.kaitai=0;d.kaitai='お見積り金額をご入力ください';
  o.chimoku=0;d.chimoku='土地家屋調査士報酬をご入力ください';
+ o.hikikomi=0;d.hikikomi='前面道路からの引込工事費。市の負担金が別途かかる場合があります';
  o.inspect=66000;d.inspect='既存住宅状況調査の一般的な費用';
  o.kasai=PTYPE==='mansion'?200000:300000;
  d.kasai=PTYPE==='mansion'?'マンション 5年一括の目安':'一戸建 5年一括の目安';
@@ -641,7 +643,7 @@ function drawDoc(ar,R){
   ${isLoan()?`・お借入金額は${yen(P.B.loanUnit||100000)}円単位に切り上げています。毎月払いのみ（ボーナス併用なし）で計算しています。<br>
   ・金利は${M.date?jpDate(M.date)+'時点':'ご提示時点'}のもので、実行時の金利・審査結果により変わります。${chk('optKojo')?'住宅ローン控除は一般の既存住宅（借入限度2,000万円）で試算した初年度の目安です。':''}<br>`:''}
   ・登記費用・清算金・保険料は概算です。実額は見積・精算書によります。ご購入の4〜6ヶ月後に不動産取得税の納税通知が届きます。<br>
-  ・引越費用、家具・家電・カーテン代は含まれていません。本書は概算であり、融資条件・諸費用・税額をお約束するものではありません。
+  ${PTYPE==='tochi'?'・建築工事費、外構工事費、地盤改良費は含まれていません。<br>':'・引越費用、家具・家電・カーテン代は含まれていません。<br>'}・本書は概算であり、融資条件・諸費用・税額をお約束するものではありません。
  </div>
  <div style="text-align:right;margin-top:5px;font-size:11px">ViVi不動産株式会社　担当：　　　　　　　　</div></div></div>`;
 
