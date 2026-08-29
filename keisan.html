@@ -308,7 +308,8 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
 <div class="pane" id="p_kanri">
 <div class="card"><div class="chd"><h2>管理費・修繕積立金 精算金ツール</h2></div><div class="cbd">
 
-<div class="msg w"><b>考え方は固定資産税と同じです。</b>管理費と修繕積立金は月単位で引き落とされます。決済月の分はすでに売主が払っているので、決済日以降の分を買主が売主に返します。日割の分母は<b>その月の日数</b>です（28〜31日）。</div>
+<div class="msg w"><b>考え方は固定資産税と同じです。</b>管理費と修繕積立金は月単位で引き落とされます。売主がすでに払っている分のうち、引渡日以降にあたる分を買主が売主に返します。引渡月は<b>日割</b>（分母はその月の日数、28〜31日）、それより先の月は<b>満額</b>で精算します。<br>
+まず<b>売主が何月分まで支払い済みか</b>を確認し、それに合わせて精算範囲を選んでください。</div>
 
 <div class="grid g3">
  <div class="fld"><label>管理費</label><div class="unit"><input type="number" id="m_kanri" value="9800" oninput="calcKanri()"><span class="u">円/月</span></div></div>
@@ -320,8 +321,8 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
  <div class="fld"><label>決済日当日の負担</label>
   <div class="seg" id="m_seg"><button data-v="buy" class="on">買主</button><button data-v="sell">売主</button></div>
  </div>
- <div class="fld"><label>引き落としの時期</label>
-  <div class="seg" id="m_seg2"><button data-v="pre" class="on">当月分を当月に</button><button data-v="post">翌月分を当月に</button></div>
+ <div class="fld"><label>精算範囲</label>
+  <div class="seg" id="m_seg2"><button data-v="0" class="on">引渡月のみ</button><button data-v="1">翌月分まで</button><button data-v="2">翌々月分まで</button></div>
  </div>
 </div>
 
@@ -332,8 +333,16 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
 
 <h3 class="sec">押さえておくこと</h3>
 
-<h4>引き落としの時期を必ず確認する</h4>
-<p>管理組合によって「当月分を当月27日に引き落とし」「翌月分を当月27日に引き落とし（前払い）」など様々です。<b>前払いの場合、売主は決済月の翌月分まですでに払っている</b>ので、精算範囲が1か月ずれます。管理会社に発行してもらう<b>重要事項に係る調査報告書</b>で確認してください。この書類には管理費・修繕積立金の額、滞納の有無、引き落とし日、修繕積立金の総額などが書かれています。</p>
+<h4>精算範囲の決め方</h4>
+<p><b>売主がどの月の分まで支払い済みか</b>で決まります。ここを取り違えると、買主に二重負担が生じたり、売主が払い損になったりします。</p>
+<table>
+<tr><th style="width:26%">選ぶもの</th><th>こういうとき</th></tr>
+<tr><td><b>引渡月のみ</b></td><td>売主の支払いが引渡月の分で止まるとき。当月分を当月に引き落とす方式が該当します。もっとも多いパターンです</td></tr>
+<tr><td><b>翌月分まで</b></td><td>売主がすでに翌月分まで払っているとき。翌月分を当月に引き落とす前払い方式や、引落日の関係で決済後にもう1回売主口座から引き落とされる場合です</td></tr>
+<tr><td><b>翌々月分まで</b></td><td>2か月先まで払い済みのとき。前払い方式で、かつ決済後に引き落としが1回残っている場合などです</td></tr>
+</table>
+<p>判断材料は、管理会社に発行してもらう<b>重要事項に係る調査報告書</b>です。管理費・修繕積立金の額、滞納の有無、引落日、支払済みの月が書かれています。<b>引落日と決済日の前後関係</b>まで見て、決済後に売主口座から引き落とされる回があるかを確認してください。</p>
+<div class="msg w"><b>迷ったら管理会社に一本電話を。</b>「◯月◯日に売買の決済をします。売主様は何月分まで支払い済みになりますか」と聞くのが確実です。書類だけで判断すると、引落日のずれを見落とします。</div>
 
 <h4>滞納があるとき</h4>
 <p>売主に滞納があると、<b>その債務は買主に承継されます</b>（区分所有法8条）。管理組合は新しい所有者にも請求できます。滞納が判明したら、決済時に売買代金から差し引いて管理組合に直接支払う処理をしてください。精算金の計算とは別の話です。</p>
@@ -346,7 +355,8 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
 
 <div class="msg n"><b>よくある間違い</b><br>
 ・30日で固定して割ってしまう（2月は28日、31日の月もあります）<br>
-・引き落としが前払いか後払いか確認しない<br>
+・売主が何月分まで支払い済みかを確認せず、いつも「引渡月のみ」で計算する<br>
+・引落日が決済日の後にあることを見落とす<br>
 ・駐車場使用料を入れ忘れる<br>
 ・滞納分を精算金と混同する</div>
 
@@ -526,18 +536,20 @@ function calcKanri(){
  const a=numv('m_kanri'),b=numv('m_shuzen'),c=numv('m_other'),tot=a+b+c;
  const dt=parseD($('m_date').value);
  if(!dt||tot<=0){$('m_res').innerHTML='<div class="msg n">金額と決済日を入力してください。</div>';$('m_steps').innerHTML='';return;}
- const owner=segv('m_seg'),mode=segv('m_seg2');
+ const owner=segv('m_seg'),ext=parseInt(segv('m_seg2'))||0;
  const y=dt.getUTCFullYear(),mo=dt.getUTCMonth();
  const dim=new Date(Date.UTC(y,mo+1,0)).getUTCDate();
  const bstart=owner==='buy'?dt.getUTCDate():dt.getUTCDate()+1;
  const bdays=Math.max(0,dim-bstart+1);
  const raw=tot*bdays/dim;
  const nissuu=Math.floor(raw);
- const extra=mode==='post'?tot:0;
+ const extra=tot*ext;
  const sum=nissuu+extra;
+ const mn=i=>`${new Date(Date.UTC(y,mo+i,1)).getUTCFullYear()}年${new Date(Date.UTC(y,mo+i,1)).getUTCMonth()+1}月`;
+ const extLabel=ext===0?'':ext===1?`${mn(1)}分 1か月`:`${mn(1)}分・${mn(2)}分 2か月`;
  $('m_res').innerHTML=box('買主のご負担（売主にお支払い）',yen(sum),
-  `${y}年${mo+1}月${bstart}日 〜 ${mo+1}月${dim}日　${bdays}日分 ＝ ${yen(nissuu)}円`
-  +(extra?`<br>前払いのため翌月分1か月 ${yen(extra)}円 を加算`:''))
+  `${mn(0)}${bstart}日 〜 ${mo+1}月${dim}日　${bdays}日分（日割） ＝ ${yen(nissuu)}円`
+  +(extra?`<br>${extLabel} ＝ ${yen(extra)}円`:''))
  +`<table><tr><th>内訳</th><th class="n">月額</th></tr>
   <tr><td>管理費</td><td class="n">${yen(a)}</td></tr>
   <tr><td>修繕積立金</td><td class="n">${yen(b)}</td></tr>
@@ -547,9 +559,10 @@ function calcKanri(){
   ['① 月額を合計する',`${yen(a)} ＋ ${yen(b)}${c>0?` ＋ ${yen(c)}`:''} ＝ ${yen(tot)}円/月`],
   ['② その月の日数を確認する',`${y}年${mo+1}月は ${dim}日${dim===29?'（うるう年の2月）':''}`],
   ['③ 買主の負担日数を数える',`決済日当日は${owner==='buy'?'買主':'売主'}負担 → ${mo+1}月${bstart}日 〜 ${mo+1}月${dim}日 ＝ ${bdays}日`],
-  ['④ 日割で計算する',`${yen(tot)} ÷ ${dim}日 × ${bdays}日 ＝ ${raw.toFixed(2)}円 → 切り捨て ${yen(nissuu)}円`],
-  mode==='post'?['⑤ 前払い分を加える',`翌月分がすでに引き落とされているため ＋${yen(extra)}円`]:['⑤ 前払い分',`当月分を当月に引き落とす方式のため加算なし`],
-  ['⑥ 買主のご負担額',`${yen(sum)}円`,1]
+  ['④ 引渡月を日割で計算する',`${yen(tot)} ÷ ${dim}日 × ${bdays}日 ＝ ${raw.toFixed(2)}円 → 切り捨て ${yen(nissuu)}円`],
+  ext>0?['⑤ 先の月の分を加える',`${extLabel}分（満額） ${yen(tot)} × ${ext}か月 ＝ ${yen(extra)}円`]
+       :['⑤ 先の月の分','「引渡月のみ」を選択しているため加算なし'],
+  ['⑥ 買主のご負担額',`${yen(nissuu)}${extra?` ＋ ${yen(extra)}`:''} ＝ ${yen(sum)}円`,1]
  ]);}
 segInit('m_seg',calcKanri);segInit('m_seg2',calcKanri);
 
