@@ -88,16 +88,24 @@ details .in{padding:0 14px 14px}
 .sheet .cmp th{background:#EDF1F7;color:var(--navy);text-align:center}
 .sheet .cmp td{text-align:right;font-family:"Roboto Mono",monospace}
 .sheet .cmp td:first-child{text-align:left;font-family:inherit}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.sheet .cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
+.sheet .cols h3:first-child{margin-top:0}
+@media(max-width:640px){.sheet .cols{grid-template-columns:1fr}}
 @media print{
   body{background:#fff}
   header,.wrap>.card,.wrap>details,.srcbar,#noprint{display:none!important}
   .wrap{max-width:none;padding:0;margin:0}
-  #doc .sheet{border:0;border-radius:0;margin:0;padding:8mm 9mm;font-size:10.5px}
+  #doc .sheet{border:0;border-radius:0;margin:0;padding:0;font-size:9.4px;line-height:1.42}
   #doc .sheet+.sheet{page-break-before:always}
-  .sheet h1{font-size:17px}
+  .sheet h1{font-size:15px;padding-bottom:3px;margin-bottom:5px}
+  .sheet h3{font-size:10.5px;padding:2px 6px;margin:5px 0 3px}
+  .sheet .meta{font-size:9.4px;margin-bottom:5px}
+  .sheet th,.sheet td{padding:1.3px 4px;font-size:9.4px;line-height:1.35}
+  .sheet .det{font-size:8.2px;line-height:1.3}
+  .sheet .fine{font-size:8.2px;margin-top:4px}
+  .sheet .cols{gap:6px}
   .sheet tr{page-break-inside:avoid}
-  @page{size:A4 portrait;margin:8mm}
+  @page{size:A4 portrait;margin:9mm}
 }
 </style>
 </head>
@@ -116,7 +124,7 @@ details .in{padding:0 14px 14px}
 
 <!-- 1 案件情報 -->
 <div class="card"><div class="chd"><span class="no">1</span><h2>案件情報</h2></div><div class="cbd">
- <div class="grid g2" style="margin-bottom:11px">
+ <div class="grid g3" style="margin-bottom:11px">
   <div class="fld"><label>物件種別</label>
    <div class="seg" id="segType">
     <button data-v="mansion" class="on">マンション</button>
@@ -128,6 +136,12 @@ details .in{padding:0 14px 14px}
    <div class="seg" id="segOwner">
     <button data-v="ko" class="on">個人売主</button>
     <button data-v="hojin">法人物件（課税事業者）</button>
+   </div>
+  </div>
+  <div class="fld"><label>お支払いの方法</label>
+   <div class="seg" id="segPay">
+    <button data-v="loan" class="on">住宅ローンを利用</button>
+    <button data-v="cash">現金でご購入</button>
    </div>
   </div>
  </div>
@@ -145,7 +159,7 @@ details .in{padding:0 14px 14px}
  <div class="grid g4">
   <div class="fld"><label>売買金額（税込）</label><div class="unit"><input type="number" id="price" value="20000000" oninput="calc()"><span class="u">円</span></div></div>
   <div class="fld" id="wrapTaxb"><label>うち建物消費税額</label><div class="unit"><input type="number" id="taxbld" value="0" oninput="calc()"><span class="u">円</span></div><div class="note">仲介手数料は税抜価格で計算します</div></div>
-  <div class="fld"><label>リノベーション工事費（税込）</label><div class="unit"><input type="number" id="reno" value="0" oninput="calc()"><span class="u">円</span></div></div>
+  <div class="fld"><label>リノベーション工事費（予備費含む・税込）</label><div class="unit"><input type="number" id="reno" value="0" oninput="calc()"><span class="u">円</span></div></div>
   <div class="fld"><label>自己資金</label><div class="unit"><input type="number" id="jiko" value="0" oninput="calc()"><span class="u">円</span></div></div>
  </div>
  <div class="grid g4" style="margin-top:11px">
@@ -160,12 +174,20 @@ details .in{padding:0 14px 14px}
    <div class="note" id="chukaiNote"></div>
   </div>
   <div class="fld"><label>不動産取得税（軽減後の概算・任意）</label><div class="unit"><input type="number" id="shutoku" placeholder="0" oninput="calc()"><span class="u">円</span></div><div class="note">総額には含めず、参考欄に表示します</div></div>
-  <div class="fld" style="align-self:end"><label class="chk"><input type="checkbox" id="denshi" onchange="calc()">ローン契約は電子契約（印紙0円）</label></div>
+  <div class="fld"><label>契約の方法（印紙代に影響します）</label>
+   <div class="grid g2" style="gap:7px">
+    <div><div style="font-size:10.5px;color:var(--soft);margin-bottom:2px">売買契約</div>
+     <div class="seg" id="segBai"><button data-v="kami" class="on">紙</button><button data-v="denshi">電子</button></div></div>
+    <div id="wrapSegLoan"><div style="font-size:10.5px;color:var(--soft);margin-bottom:2px">金銭消費貸借契約（銀行）</div>
+     <div class="seg" id="segLoan"><button data-v="denshi" class="on">電子</button><button data-v="kami">紙</button></div></div>
+   </div>
+   <div class="note" id="keiyakuNote"></div>
+  </div>
  </div>
 </div></div>
 
 <!-- 3 借入条件 -->
-<div class="card"><div class="chd"><span class="no">3</span><h2>借入条件</h2></div><div class="cbd">
+<div class="card" id="cardLoan"><div class="chd"><span class="no">3</span><h2>借入条件</h2></div><div class="cbd">
  <div id="plans"></div>
 </div></div>
 
@@ -177,12 +199,13 @@ details .in{padding:0 14px 14px}
 
 <!-- 5 出力オプション -->
 <div class="card"><div class="chd"><span class="no">5</span><h2>出力する内容</h2></div><div class="cbd">
- <div class="grid g4">
+ <div class="grid g4" id="optGrid">
   <label class="chk"><input type="checkbox" id="optCmp" onchange="onOpt()">金利プランを3つ比較する</label>
   <label class="chk"><input type="checkbox" id="optRatio" onchange="onOpt()">返済負担率を表示する</label>
   <label class="chk"><input type="checkbox" id="optKojo" onchange="onOpt()">住宅ローン控除の目安を表示する</label>
   <label class="chk"><input type="checkbox" id="optSch" onchange="onOpt()">返済予定表を付ける</label>
  </div>
+ <div id="optLoanOnly"></div>
  <div class="fld" id="wrapNensyu" style="margin-top:11px;max-width:280px;display:none"><label>ご年収（返済負担率の計算用）</label><div class="unit"><input type="number" id="nensyu" value="0" oninput="calc()"><span class="u">円</span></div></div>
  <div class="note">いずれもチェックしたときだけ帳票に追加されます。比較表と返済予定表は2枚目以降に印刷されます。</div>
 </div></div>
@@ -308,7 +331,8 @@ const inshiB=p=>p<=1e6?500:p<=5e6?1000:p<=1e7?5000:p<=5e7?10000:30000;
 const inshiK=p=>p<=5e6?2000:p<=1e7?10000:p<=5e7?20000:60000;
 const inshiU=p=>p<=2e6?200:p<=3e6?500:p<=5e6?1000:p<=1e7?5000:p<=5e7?10000:30000;
 const hoshoAdj=(b,y)=>b*(y<=20?.72:y<=25?.845:y<=30?.927:y<=35?1:y<=40?1.07:1.13);
-var PTYPE='mansion',OWNER='ko',DISC=0;
+var PTYPE='mansion',OWNER='ko',DISC=0,BAI='kami',LOANK='denshi',PAY='loan';
+const isLoan=()=>PAY==='loan';
 var OVM={},OVV={};   /* 項目ごとの 自動/入力 と、その入力値 */
 
 const FEE_A=[
@@ -316,21 +340,24 @@ const FEE_A=[
  {k:'chukai',n:'仲介手数料（税込）'},
  {k:'seisan',n:'固定資産税等 清算金'},
  {k:'inshi1',n:'印紙代（売買契約書）'},
- {k:'kanriS',n:'管理費等 清算金',only:'mansion'},
- {k:'kikin',n:'管理基金・修繕積立基金',only:'mansion'},
- {k:'hyoji',n:'表示登記費用',not:'mansion'},
+ {k:'kanriS',n:'管理費等 清算金',only:'mansion',manual:1},
+ {k:'kikin',n:'管理基金・修繕積立基金',only:'mansion',manual:1},
+ {k:'hyoji',n:'表示登記費用',only:'kodate'},
+ {k:'bougi',n:'防蟻費用',only:'kodate'},
+ {k:'kaitai',n:'解体費用',only:'tochi',manual:1},
+ {k:'chimoku',n:'地目変更費用',only:'tochi',manual:1},
  {k:'inspect',n:'既存住宅状況調査（インスペクション）'},
- {k:'otherA',n:'その他'}
+ {k:'kasai',n:'火災・地震保険料（5年一括）',not:'tochi'}
 ];
+var OTHERS=[];   /* 購入に関する諸費用の「その他」可変行 */
 const FEE_R=[
- {k:'inshi3',n:'印紙代（工事請負契約書）'},
- {k:'yobi',n:'工事予備費'}
+ {k:'inshi3',n:'印紙代（工事請負契約書）'}
 ];
 const FEE_B=[
- {k:'kasai',n:'火災・地震保険料（5年一括）'},
  {k:'hosho',n:'ローン保証料'},
  {k:'danshin',n:'団体信用生命保険料'},
  {k:'inshi2',n:'印紙代（金銭消費貸借契約書）'},
+ {k:'denshiFee',n:'電子契約手数料'},
  {k:'teitou',n:'抵当権設定費用'},
  {k:'jimu',n:'ローン取扱手数料'},
  {k:'otherB',n:'その他'}
@@ -339,10 +366,11 @@ const ALLFEE=FEE_A.concat(FEE_R,FEE_B);
 function feeVisible(f){
  if(f.only&&PTYPE!==f.only)return false;
  if(f.not&&PTYPE===f.not)return false;
- if(PTYPE==='tochi'&&(f.k==='inspect'||f.k==='kanriS'||f.k==='kikin'||f.k==='hyoji'))return false;
- if((f.k==='inshi3'||f.k==='yobi')&&numv('reno')<=0)return false;
+ if(PTYPE==='tochi'&&f.k==='inspect')return false;
  return true;}
-function ov(k){if(OVM[k]!=='man')return null;const v=parseFloat(OVV[k]);return isNaN(v)?0:v;}
+function renoVisible(){return PTYPE!=='tochi';}
+function isManual(k){const f=ALLFEE.find(x=>x.k===k);return!!(f&&f.manual);}
+function ov(k){if(!isManual(k)&&OVM[k]!=='man')return null;const v=parseFloat(OVV[k]);return isNaN(v)?0:v;}
 
 /* 仲介手数料：800万円以下は当社ルールで一律33万円（税込） */
 function calcChukai(){
@@ -361,29 +389,35 @@ function calcAR(){
  if(PTYPE==='mansion'){o.toki=price*0.002+100000;d.toki='売買価格×0.2％＋10万円の概算';}
  else{o.toki=price*0.01+100000;d.toki='売買価格×1％＋10万円の概算';}
  o.seisan=numv('tax')*0.5;d.seisan='年税額の概ね半年分（決済日で按分）';
- o.inshi1=inshiB(price);d.inshi1='売買金額に応じた軽減後の税額';
- o.kanriS=numv('kanri')+numv('shuzen');d.kanriS='管理費・修繕積立金の1ヶ月分（日割精算）';
- o.kikin=0;d.kikin='管理規約により必要な場合に入力';
+ o.inshi1=BAI==='kami'?inshiB(price):0;
+ d.inshi1=BAI==='kami'?'紙の契約／売買金額に応じた軽減後の税額':'電子契約のため非課税';
+ o.kanriS=0;d.kanriS='日割精算額をご入力ください';
+ o.kikin=0;d.kikin='管理規約により必要な場合にご入力ください';
  o.hyoji=100000;d.hyoji='土地家屋調査士報酬の目安';
+ o.bougi=200000;d.bougi='床下の防蟻処理の目安';
+ o.kaitai=0;d.kaitai='お見積り金額をご入力ください';
+ o.chimoku=0;d.chimoku='土地家屋調査士報酬をご入力ください';
  o.inspect=66000;d.inspect='既存住宅状況調査の一般的な費用';
- o.otherA=0;d.otherA='';
+ o.kasai=PTYPE==='mansion'?200000:300000;
+ d.kasai=PTYPE==='mansion'?'マンション 5年一括の目安':'一戸建 5年一括の目安';
  o.inshi3=inshiU(reno);d.inshi3='工事請負金額に応じた軽減後の税額';
- o.yobi=Math.round(reno*0.05);d.yobi='工事費の5％';
- FEE_A.concat(FEE_R).forEach(f=>{const v=ov(f.k);if(v!==null){o[f.k]=v;d[f.k]='入力値';}});
- let sum=0,sumA=0,sumR=0;
+ FEE_A.concat(FEE_R).forEach(f=>{const v=ov(f.k);if(v!==null){o[f.k]=v;d[f.k]=f.manual?d[f.k]:'入力値';}});
+ let sumA=0,sumR=0;
  FEE_A.forEach(f=>{if(feeVisible(f))sumA+=(o[f.k]||0);});
- FEE_R.forEach(f=>{if(feeVisible(f))sumR+=(o[f.k]||0);});
- sum=sumA+sumR;
- return {o:o,d:d,sum:sum,sumA:sumA,sumR:sumR};}
+ OTHERS.forEach(x=>{sumA+=(parseFloat(x.val)||0);});
+ if(renoVisible())FEE_R.forEach(f=>{if(feeVisible(f))sumR+=(o[f.k]||0);});
+ return {o:o,d:d,sum:sumA+sumR,sumA:sumA,sumR:sumR};}
 
 function calcB(bankKey,loan,years){
  const B=M.banks[bankKey]||M.banks.other,o={},d={};
- o.kasai=PTYPE==='mansion'?200000:(PTYPE==='tochi'?0:300000);
- d.kasai=PTYPE==='mansion'?'マンション 5年一括の目安':(PTYPE==='tochi'?'建物がないため計上なし':'一戸建 5年一括の目安');
+ if(!isLoan()){FEE_B.forEach(f=>{o[f.k]=0;d[f.k]='';});return {o:o,d:d,sum:0};}
  if(B.hosho==='ikkatsu'&&B.hoshoRate){const rr=hoshoAdj(B.hoshoRate,years);o.hosho=loan*rr/100;d.hosho=`借入額×${rr.toFixed(2)}％（${years}年・一括前払い）`;}
  else{o.hosho=0;d.hosho=B.hosho==='inrate'?'お借入金利に含まれます（別途のご負担なし）':'保証料0円（金融機関負担）';}
  o.danshin=0;d.danshin='お借入金利に含まれます';
- o.inshi2=chk('denshi')?0:inshiK(loan);d.inshi2=chk('denshi')?'電子契約のため非課税':'借入金額に応じた税額';
+ o.inshi2=LOANK==='kami'?inshiK(loan):0;
+ d.inshi2=LOANK==='kami'?'紙の契約／借入金額に応じた税額':'電子契約のため非課税';
+ o.denshiFee=LOANK==='denshi'?5500:0;
+ d.denshiFee=LOANK==='denshi'?'電子契約システム利用料':'紙の契約のため計上なし';
  o.teitou=loan*0.001+50000;d.teitou='登録免許税0.1％（軽減後）＋司法書士報酬の概算';
  if(B.jimuType==='rate'){o.jimu=loan*(B.jimuRate||0)/100;d.jimu=`借入額×${B.jimuRate}％`;}
  else{o.jimu=B.jimuFixed||0;d.jimu=`${yen(B.jimuFixed||0)}円${B.jimuAlt?`（条件により${yen(B.jimuAlt)}円）`:''}`;}
@@ -394,6 +428,7 @@ function calcB(bankKey,loan,years){
 
 function solveLoan(bankKey,years,ar){
  const B=M.banks[bankKey]||M.banks.other;
+ if(!isLoan())return {loan:0,fb:calcB(bankKey,0,years)};
  const price=numv('price'),reno=numv('reno'),jiko=numv('jiko');
  const unit=B.loanUnit||100000;
  let loan=Math.max(0,price+reno+ar.sum-jiko),fb=null;
@@ -411,7 +446,7 @@ const pmt=(loan,rate,years)=>{const r=rate/100/12,n=years*12;
 
 /* ===== プラン ===== */
 var PLANS=[{bank:'hokugin',fix:'f0',rate:'',years:35},{bank:'rokin',fix:'f0',rate:'',years:35},{bank:'ichigin',fix:'f0',rate:'',years:35}];
-function nPlans(){return chk('optCmp')?3:1;}
+function nPlans(){return (isLoan()&&chk('optCmp'))?3:1;}
 function autoRate(bank,fix){const B=M.banks[bank];if(!B)return null;const v=B.rates[fix];return(v===null||v===undefined)?null:v;}
 function buildPlans(){
  let h='';
@@ -442,6 +477,10 @@ function onOpt(){
 
 /* ===== 諸費用の編集欄（構成が変わったときだけ組み直す） ===== */
 var FEESIG='';
+function addOther(){OTHERS.push({name:'',val:''});FEESIG='';calc();
+ const e=document.querySelector('#feeEdit .otname:last-of-type');if(e)e.focus();}
+function delOther(i){OTHERS.splice(i,1);FEESIG='';calc();}
+function setOther(i,k,v){if(OTHERS[i]){OTHERS[i][k]=v;calc();}}
 function setMode(k,m,auto){
  OVM[k]=m;
  if(m==='man'&&(OVV[k]===undefined||OVV[k]===''))OVV[k]=Math.round(auto);
@@ -449,8 +488,12 @@ function setMode(k,m,auto){
  if(m==='man'){const e=$('ov_'+k);if(e){e.focus();e.select();}}}
 function setOvv(k,v){OVV[k]=v;calc();}
 function buildFeeEdit(res){
- const sig=PTYPE+'|'+OWNER+'|'+(numv('reno')>0)+'|'+Object.keys(OVM).map(k=>k+OVM[k]).join(',');
+ const sig=PTYPE+'|'+OWNER+'|'+BAI+LOANK+'|'+OTHERS.length+'|'+Object.keys(OVM).map(k=>k+OVM[k]).join(',');
  const rowsOf=list=>list.filter(feeVisible).map(f=>{
+  if(f.manual)return `<tr><td>${f.n}<span class="det">${res.d[f.k]||''}</span></td>
+   <td class="n" style="color:var(--soft)">―</td>
+   <td style="text-align:center;font-size:11px;color:var(--soft)">手入力</td>
+   <td class="n" style="width:120px"><input class="ovin num" type="number" id="ov_${f.k}" value="${OVV[f.k]!==undefined?OVV[f.k]:''}" oninput="setOvv('${f.k}',this.value)"></td></tr>`;
   const man=OVM[f.k]==='man';
   return `<tr><td>${f.n}<span class="det" id="dt_${f.k}">${res.d[f.k]||''}</span></td>
    <td class="n" id="au_${f.k}" style="${man?'color:var(--soft);text-decoration:line-through':''}">${yen(res.auto[f.k]||0)}</td>
@@ -459,13 +502,19 @@ function buildFeeEdit(res){
      <button class="${man?'on':''}" onclick="setMode('${f.k}','man',${Math.round(res.auto[f.k]||0)})">入力</button>
    </div></td>
    <td class="n" style="width:120px"><input class="ovin num" type="number" id="ov_${f.k}" ${man?'':'disabled'} value="${man?(OVV[f.k]!==undefined?OVV[f.k]:''):''}" oninput="setOvv('${f.k}',this.value)"></td></tr>`;}).join('');
+ const otherRows=OTHERS.map((x,i)=>`<tr>
+   <td><input class="otname" placeholder="項目名（例：シロアリ防除工事）" value="${esc(x.name)}" oninput="setOther(${i},'name',this.value)" style="font-size:12.5px;padding:3px 6px"></td>
+   <td class="n" style="color:var(--soft);font-size:11px">―</td>
+   <td style="text-align:center"><button class="btn g sm" onclick="delOther(${i})">削除</button></td>
+   <td class="n"><input class="ovin num" type="number" value="${x.val}" oninput="setOther(${i},'val',this.value)"></td></tr>`).join('');
  if(sig!==FEESIG){
   FEESIG=sig;
   const hd=`<tr><th>項目</th><th class="n" style="width:110px">自動計算</th><th style="width:96px"></th><th class="n" style="width:120px">入力値</th></tr>`;
   const sec=t=>`<tr><td colspan="4" style="background:var(--tint);font-weight:700;color:var(--navy)">${t}</td></tr>`;
-  $('feeEdit').innerHTML=`<table>${hd}${sec('購入に関する諸費用')}${rowsOf(FEE_A)}
-   ${numv('reno')>0?sec('工事に関するもの')+rowsOf(FEE_R):''}
-   ${sec('借入に関する諸費用')}${rowsOf(FEE_B)}</table>`;
+  $('feeEdit').innerHTML=`<table>${hd}${sec('購入に関する諸費用')}${rowsOf(FEE_A)}${otherRows}
+   <tr><td colspan="4"><button class="btn g sm" onclick="addOther()">＋ その他の項目を追加</button></td></tr>
+   ${renoVisible()?sec('リノベーション工事')+rowsOf(FEE_R):''}
+   ${isLoan()?sec('借入に関する諸費用')+rowsOf(FEE_B):''}</table>`;
  }else{
   ALLFEE.forEach(f=>{const a=$('au_'+f.k),t=$('dt_'+f.k);
    if(a)a.textContent=yen(res.auto[f.k]||0);
@@ -507,59 +556,64 @@ function drawDoc(ar,R){
   <div>物件名：${esc($('pname').value)||'―'}（${TYPEN}）</div>
   <div>作成日：${jpDate($('mkdate').value)}</div>
  </div>
+ <div class="cols"><div>
 
  <h3>○ 購入に関する諸費用</h3>
  <table>${FEE_A.map(f=>row(f,ar.o,ar.d)).join('')}
- <tr class="sum"><td>合計 Ａ</td><td class="n">${yen(ar.sumA)}</td></tr></table>`;
+ ${OTHERS.map(x=>`<tr><td>${esc(x.name)||'その他'}</td><td class="n">${yen(parseFloat(x.val)||0)}</td></tr>`).join('')}
+ <tr class="sum"><td>合計 Ａ</td><td class="n">${yen(ar.sumA)}</td></tr></table>
 
- if(reno>0){h+=`<h3>○ リノベーション工事</h3>
- <table><tr><td>工事費（税込）</td><td class="n">${yen(reno)}</td></tr>
+ ${renoVisible()?`<h3>○ リノベーション工事</h3>
+ <table><tr><td>リノベーション工事費（予備費含む・税込）</td><td class="n">${yen(reno)}</td></tr>
  ${FEE_R.map(f=>row(f,ar.o,ar.d)).join('')}
- <tr class="sum"><td>工事関係 計</td><td class="n">${yen(reno+ar.sumR)}</td></tr></table>`;}
+ <tr class="sum"><td>合計 Ｃ</td><td class="n">${yen(reno+ar.sumR)}</td></tr></table>`:''}
 
- h+=`<h3>○ 借入に関する諸費用　<span style="font-weight:400;font-size:10.5px">（${P.B.name}／${fixLabel(P.p.fix)} ${P.rate.toFixed(3)}％・${P.p.years}年でお借入の場合）</span></h3>
+ ${isLoan()?`<h3>○ 借入に関する諸費用</h3>
  <table>${FEE_B.map(f=>row(f,P.fb.o,P.fb.d)).join('')}
- <tr class="sum"><td>合計 Ｂ</td><td class="n">${yen(sumB)}</td></tr></table>
+ <tr class="sum"><td>合計 Ｂ</td><td class="n">${yen(sumB)}</td></tr></table>`:''}
+
+ </div><div>
 
  <h3>○ 資金計画</h3>
  <table>
   <tr><td>売買代金</td><td class="n">${yen(price)}</td></tr>
-  ${reno>0?`<tr><td>リノベーション工事費</td><td class="n">${yen(reno)}</td></tr>`:''}
-  <tr><td>諸費用合計（Ａ＋Ｂ${reno>0?'＋工事関係諸費用':''}）</td><td class="n">${yen(ar.sum+sumB)}</td></tr>
-  <tr class="sum"><td>お支払い総額</td><td class="n">${yen(total)}</td></tr>
-  <tr><td>自己資金</td><td class="n">${yen(jiko)}</td></tr>
-  <tr class="big"><td>お借入金額</td><td class="n">${yen(P.loan)}</td></tr>
+  ${renoVisible()?`<tr><td>リノベーション工事（Ｃ）</td><td class="n">${yen(reno+ar.sumR)}</td></tr>`:''}
+  <tr><td>諸費用合計（${isLoan()?'Ａ＋Ｂ':'Ａ'}）</td><td class="n">${yen(ar.sumA+sumB)}</td></tr>
+  <tr class="${isLoan()?'sum':'big'}"><td>お支払い総額</td><td class="n">${yen(total)}</td></tr>
+  ${isLoan()?`<tr><td>自己資金</td><td class="n">${yen(jiko)}</td></tr>
+  <tr class="big"><td>お借入金額</td><td class="n">${yen(P.loan)}</td></tr>`:
+  `<tr><td colspan="2" style="font-size:10px">現金でご用意いただく金額です。住宅ローンはご利用になりません。</td></tr>`}
  </table>
 
- <h3>○ 毎月のお支払い</h3>
+ <h3>○ ${isLoan()?'毎月のお支払い':'ご購入後のご負担'}</h3>
  <table>
-  <tr><td>お借入条件</td><td class="n">${P.B.short}／${fixLabel(P.p.fix)} ${P.rate.toFixed(3)}％／${P.p.years}年</td></tr>
-  <tr><td>毎月のご返済額</td><td class="n">${yen(P.m)} 円/月</td></tr>
-  <tr><td>固定資産税等（年額）</td><td class="n">${yen(numv('tax'))} 円/年</td></tr>
+  ${isLoan()?`<tr><td>お借入条件</td><td class="n">${P.B.short}／${fixLabel(P.p.fix)} ${P.rate.toFixed(3)}％／${P.p.years}年</td></tr>
+  <tr><td>毎月のご返済額</td><td class="n">${yen(P.m)} 円/月</td></tr>`:''}
   ${PTYPE==='mansion'?`<tr><td>管理費</td><td class="n">${yen(numv('kanri'))} 円/月</td></tr>
   <tr><td>修繕積立金</td><td class="n">${yen(numv('shuzen'))} 円/月</td></tr>
   <tr><td>駐車場</td><td class="n">${yen(numv('parking'))} 円/月</td></tr>`:''}
-  <tr class="big"><td>月々の合計（ローン${PTYPE==='mansion'?'＋管理費等':''}）</td><td class="n">${yen(P.m+monthly)} 円/月</td></tr>
- </table>
- <div class="fine">お借入金額は${yen(P.B.loanUnit||100000)}円単位に切り上げています。毎月払いのみ（ボーナス併用なし）で計算しています。金利は${M.date?jpDate(M.date)+'時点':'ご提示時点'}のもので、実行時の金利・審査結果により変わります。</div>`;
+  ${(isLoan()||PTYPE==='mansion')?`<tr class="big"><td>月々の合計</td><td class="n">${yen(P.m+monthly)} 円/月</td></tr>`:''}
+  <tr><td>固定資産税等（年額）</td><td class="n">${yen(numv('tax'))} 円/年</td></tr>
+ </table>`;
 
  const ref=[];
  if(shutoku>0)ref.push(`<tr><td>不動産取得税（軽減後の概算）</td><td class="n">${yen(shutoku)} 円</td></tr>`);
- if(chk('optKojo'))ref.push(`<tr><td>住宅ローン控除（初年度の目安）</td><td class="n">${yen(kojo)} 円</td></tr>`);
- if(chk('optRatio')&&ratio!==null)ref.push(`<tr><td>返済負担率（審査金利3.0％）</td><td class="n" style="${ratio>35?'color:#9A3323;font-weight:700':''}">${ratio.toFixed(1)} ％</td></tr>`);
- if(ref.length){h+=`<h3>○ 参考</h3><table>${ref.join('')}</table>`;
-  if(chk('optKojo'))h+=`<div class="fine">住宅ローン控除は一般の既存住宅（借入限度2,000万円）で試算した初年度の目安です。所得税・住民税の額により実際の控除額は変わります。</div>`;}
+ if(isLoan()&&chk('optKojo'))ref.push(`<tr><td>住宅ローン控除（初年度の目安）</td><td class="n">${yen(kojo)} 円</td></tr>`);
+ if(isLoan()&&chk('optRatio')&&ratio!==null)ref.push(`<tr><td>返済負担率（審査金利3.0％）</td><td class="n" style="${ratio>35?'color:#9A3323;font-weight:700':''}">${ratio.toFixed(1)} ％</td></tr>`);
+ if(ref.length)h+=`<h3>○ 参考</h3><table>${ref.join('')}</table>`;
 
- h+=`<div class="fine" style="margin-top:8px;border-top:1px solid #C6CCD8;padding-top:6px">
-  ・ご購入の4〜6ヶ月後に不動産取得税の納税通知が届きます。<br>
-  ・登記費用・清算金・保険料は概算です。実額は見積・精算書によります。<br>
-  ・引越費用、家具・家電・カーテン代は含まれていません。<br>
-  ・本書は概算であり、融資条件・諸費用・税額をお約束するものではありません。
+ h+=`</div></div>
+
+ <div class="fine" style="margin-top:6px;border-top:1px solid #C6CCD8;padding-top:5px">
+  ${isLoan()?`・お借入金額は${yen(P.B.loanUnit||100000)}円単位に切り上げています。毎月払いのみ（ボーナス併用なし）で計算しています。<br>
+  ・金利は${M.date?jpDate(M.date)+'時点':'ご提示時点'}のもので、実行時の金利・審査結果により変わります。${chk('optKojo')?'住宅ローン控除は一般の既存住宅（借入限度2,000万円）で試算した初年度の目安です。':''}<br>`:''}
+  ・登記費用・清算金・保険料は概算です。実額は見積・精算書によります。ご購入の4〜6ヶ月後に不動産取得税の納税通知が届きます。<br>
+  ・引越費用、家具・家電・カーテン代は含まれていません。本書は概算であり、融資条件・諸費用・税額をお約束するものではありません。
  </div>
- <div style="text-align:right;margin-top:8px;font-size:10.5px">ViVi不動産株式会社　担当：　　　　　　　　</div></div>`;
+ <div style="text-align:right;margin-top:5px;font-size:9.5px">ViVi不動産株式会社　担当：　　　　　　　　</div></div>`;
 
  /* 2枚目：3行比較 */
- if(chk('optCmp')&&R.length>1){
+ if(isLoan()&&chk('optCmp')&&R.length>1){
   h+=`<div class="sheet"><h1>お借入プランの比較</h1>
   <div class="meta"><div><b>${esc($('cname').value)||'　　　　　　'}</b>　様</div><div>物件名：${esc($('pname').value)||'―'}</div><div>作成日：${jpDate($('mkdate').value)}</div></div>
   <table class="cmp">
@@ -580,7 +634,7 @@ function drawDoc(ar,R){
   </div>`;}
 
  /* 3枚目以降：返済予定表 */
- if(chk('optSch'))h+=schHTML(P);
+ if(isLoan()&&chk('optSch'))h+=schHTML(P);
 
  $('doc').innerHTML=h;}
 
@@ -603,14 +657,14 @@ function schHTML(P){
 /* ===== 案件の保存・読込 ===== */
 const SKEY='vivi_shohiyo_cases';
 const FIELDS=['pname','cname','mkdate','sdate','price','taxbld','reno','jiko','tax','kanri','shuzen','parking','nensyu','shutoku'];
-const OPTS=['optCmp','optRatio','optKojo','optSch','denshi'];
-function snap(){const d={ptype:PTYPE,owner:OWNER,disc:DISC,plans:JSON.parse(JSON.stringify(PLANS)),f:{},op:{},ovm:OVM,ovv:OVV};
+const OPTS=['optCmp','optRatio','optKojo','optSch'];
+function snap(){const d={ptype:PTYPE,owner:OWNER,disc:DISC,pay:PAY,bai:BAI,loank:LOANK,others:JSON.parse(JSON.stringify(OTHERS)),plans:JSON.parse(JSON.stringify(PLANS)),f:{},op:{},ovm:OVM,ovv:OVV};
  FIELDS.forEach(k=>d.f[k]=$(k)?$(k).value:'');
  OPTS.forEach(k=>d.op[k]=chk(k));
  return d;}
 function restore(d){
- PTYPE=d.ptype||'mansion';OWNER=d.owner||'ko';DISC=d.disc||0;
- OVM=d.ovm||{};OVV=d.ovv||{};FEESIG='';
+ PTYPE=d.ptype||'mansion';OWNER=d.owner||'ko';DISC=d.disc||0;BAI=d.bai||'kami';LOANK=d.loank||'denshi';PAY=d.pay||'loan';
+ OVM=d.ovm||{};OVV=d.ovv||{};OTHERS=d.others||[];FEESIG='';
  PLANS=d.plans||PLANS;
  FIELDS.forEach(k=>{if($(k))$(k).value=(d.f||{})[k]||'';});
  OPTS.forEach(k=>{if($(k))$(k).checked=!!(d.op||{})[k];});
@@ -645,8 +699,16 @@ function applySeg(){
  $('segType').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===PTYPE));
  $('segOwner').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===OWNER));
  $('segDisc').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.v===DISC));
+ $('segBai').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===BAI));
+ $('segLoan').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===LOANK));
+ $('keiyakuNote').textContent=`売買契約：${BAI==='kami'?'紙（売買金額に応じた印紙代）':'電子（印紙代なし）'}`
+  +(isLoan()?`　／　金銭消費貸借契約：${LOANK==='kami'?'紙（借入金額に応じた印紙代）':'電子（印紙代なし・手数料5,500円）'}`:'　／　現金購入のため金銭消費貸借契約はありません');
  document.querySelectorAll('.mansion').forEach(e=>e.style.display=PTYPE==='mansion'?'':'none');
  $('wrapTaxb').style.display=OWNER==='hojin'?'':'none';
+ $('segPay').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===PAY));
+ $('cardLoan').style.display=isLoan()?'':'none';
+ $('wrapSegLoan').style.display=isLoan()?'':'none';
+ $('optLoanOnly').style.display=isLoan()?'':'none';
  if(OWNER!=='hojin'&&$('taxbld'))$('taxbld').value=0;
  const a={mansion:'所有権移転費用は「売買価格×0.2％＋10万円」、火災保険は5年20万円で自動計算します。',
   kodate:'所有権移転費用は「売買価格×1％＋10万円」、火災保険は5年30万円で自動計算します。',
@@ -656,6 +718,9 @@ function applySeg(){
 $('segType').querySelectorAll('button').forEach(b=>b.onclick=()=>{PTYPE=b.dataset.v;FEESIG='';applySeg();calc();});
 $('segOwner').querySelectorAll('button').forEach(b=>b.onclick=()=>{OWNER=b.dataset.v;FEESIG='';applySeg();calc();});
 $('segDisc').querySelectorAll('button').forEach(b=>b.onclick=()=>{DISC=+b.dataset.v;applySeg();calc();});
+$('segBai').querySelectorAll('button').forEach(b=>b.onclick=()=>{BAI=b.dataset.v;FEESIG='';applySeg();calc();});
+$('segLoan').querySelectorAll('button').forEach(b=>b.onclick=()=>{LOANK=b.dataset.v;FEESIG='';applySeg();calc();});
+$('segPay').querySelectorAll('button').forEach(b=>b.onclick=()=>{PAY=b.dataset.v;FEESIG='';applySeg();buildPlans();calc();});
 
 /* ===== 起動 ===== */
 (function(){
