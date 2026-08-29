@@ -487,6 +487,16 @@ function setMode(k,m,auto){
  FEESIG='';calc();
  if(m==='man'){const e=$('ov_'+k);if(e){e.focus();e.select();}}}
 function setOvv(k,v){OVV[k]=v;calc();}
+function renoRow(){return `<tr><td>リノベーション工事費（予備費含む・税込）<span class="det">上の「金額」欄と連動しています</span></td>
+ <td class="n" style="color:var(--soft)">―</td>
+ <td style="text-align:center;font-size:11px;color:var(--soft)">手入力</td>
+ <td class="n" style="width:120px"><input class="ovin num" type="number" id="fe_reno" value="${$('reno')?$('reno').value:''}" oninput="setReno(this.value)"></td></tr>`;}
+function setReno(v){const e=$('reno');if(e)e.value=v;calc();}
+function syncReno(from){
+ const a=$('reno'),b=$('fe_reno');if(!a||!b)return;
+ const act=document.activeElement;
+ if(from==='card'&&act!==b)b.value=a.value;
+ if(from==='fee'&&act!==a)a.value=b.value;}
 function buildFeeEdit(res){
  const sig=PTYPE+'|'+OWNER+'|'+BAI+LOANK+'|'+OTHERS.length+'|'+Object.keys(OVM).map(k=>k+OVM[k]).join(',');
  const rowsOf=list=>list.filter(feeVisible).map(f=>{
@@ -513,13 +523,14 @@ function buildFeeEdit(res){
   const sec=t=>`<tr><td colspan="4" style="background:var(--tint);font-weight:700;color:var(--navy)">${t}</td></tr>`;
   $('feeEdit').innerHTML=`<table>${hd}${sec('購入に関する諸費用')}${rowsOf(FEE_A)}${otherRows}
    <tr><td colspan="4"><button class="btn g sm" onclick="addOther()">＋ その他の項目を追加</button></td></tr>
-   ${renoVisible()?sec('リノベーション工事')+rowsOf(FEE_R):''}
+   ${renoVisible()?sec('リノベーション工事')+renoRow()+rowsOf(FEE_R):''}
    ${isLoan()?sec('借入に関する諸費用')+rowsOf(FEE_B):''}</table>`;
  }else{
   ALLFEE.forEach(f=>{const a=$('au_'+f.k),t=$('dt_'+f.k);
    if(a)a.textContent=yen(res.auto[f.k]||0);
    if(t)t.textContent=res.d[f.k]||'';});
- }}
+ }
+ syncReno('card');}
 
 /* ===== メイン ===== */
 var LAST=null;
