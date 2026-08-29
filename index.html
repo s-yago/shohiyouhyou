@@ -210,6 +210,12 @@ details .in{padding:0 14px 14px}
  <div class="note">いずれもチェックしたときだけ帳票に追加されます。比較表と返済予定表は2枚目以降に印刷されます。</div>
 </div></div>
 
+<!-- 6 メモ -->
+<div class="card"><div class="chd"><span class="no">6</span><h2>特記事項・お客様へのご連絡</h2></div><div class="cbd">
+ <textarea id="memo" rows="4" oninput="calc()" placeholder="例：&#10;・給湯器は2024年に交換済みです。&#10;・管理組合の長期修繕計画により、2027年4月から修繕積立金が月12,000円に改定される予定です。&#10;・上記の解体費用は概算です。正式なお見積りは○月○日にご提示いたします。" style="width:100%;padding:9px;border:1px solid var(--line-s);border-radius:6px;font-size:14px;font-family:inherit;line-height:1.7;resize:vertical"></textarea>
+ <div class="note">入力すると帳票の下部に「○ 特記事項」として印刷されます。空欄のときは印刷されません。改行はそのまま反映されます。</div>
+</div></div>
+
 <div id="doc"></div>
 <div id="noprint" style="text-align:center;padding:14px">
  <button class="btn" onclick="window.print()">印刷 / PDF で保存</button>
@@ -388,7 +394,7 @@ function calcAR(){
  o.chukai=ch.v;d.chukai=ch.note;
  if(PTYPE==='mansion'){o.toki=price*0.002+100000;d.toki='売買価格×0.2％＋10万円の概算';}
  else{o.toki=price*0.01+100000;d.toki='売買価格×1％＋10万円の概算';}
- o.seisan=numv('tax')*0.5;d.seisan='年税額の概ね半年分（決済日で按分）';
+ o.seisan=numv('tax');d.seisan='年税額と同額（実際は決済日で日割精算します）';
  o.inshi1=BAI==='kami'?inshiB(price):0;
  d.inshi1=BAI==='kami'?'紙の契約／売買金額に応じた軽減後の税額':'電子契約のため非課税';
  o.kanriS=0;d.kanriS='日割精算額をご入力ください';
@@ -613,7 +619,11 @@ function drawDoc(ar,R){
  if(isLoan()&&chk('optRatio')&&ratio!==null)ref.push(`<tr><td>返済負担率（審査金利3.0％）</td><td class="n" style="${ratio>35?'color:#9A3323;font-weight:700':''}">${ratio.toFixed(1)} ％</td></tr>`);
  if(ref.length)h+=`<h3>○ 参考</h3><table>${ref.join('')}</table>`;
 
+ const memo=($('memo')&&$('memo').value||'').trim();
  h+=`</div></div>
+
+ ${memo?`<h3 style="margin-top:7px">○ 特記事項</h3>
+ <div style="border:1px solid #9AA3B2;padding:5px 8px;font-size:11px;line-height:1.55;white-space:pre-wrap">${esc(memo)}</div>`:''}
 
  <div class="fine" style="margin-top:6px;border-top:1px solid #C6CCD8;padding-top:5px">
   ${isLoan()?`・お借入金額は${yen(P.B.loanUnit||100000)}円単位に切り上げています。毎月払いのみ（ボーナス併用なし）で計算しています。<br>
@@ -667,7 +677,7 @@ function schHTML(P){
 
 /* ===== 案件の保存・読込 ===== */
 const SKEY='vivi_shohiyo_cases';
-const FIELDS=['pname','cname','mkdate','sdate','price','taxbld','reno','jiko','tax','kanri','shuzen','parking','nensyu','shutoku'];
+const FIELDS=['pname','cname','mkdate','sdate','price','taxbld','reno','jiko','tax','kanri','shuzen','parking','nensyu','shutoku','memo'];
 const OPTS=['optCmp','optRatio','optKojo','optSch'];
 function snap(){const d={ptype:PTYPE,owner:OWNER,disc:DISC,pay:PAY,bai:BAI,loank:LOANK,others:JSON.parse(JSON.stringify(OTHERS)),plans:JSON.parse(JSON.stringify(PLANS)),f:{},op:{},ovm:OVM,ovv:OVV};
  FIELDS.forEach(k=>d.f[k]=$(k)?$(k).value:'');
