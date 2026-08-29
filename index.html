@@ -71,20 +71,24 @@ td.n,th.n{text-align:right;font-family:"Roboto Mono",monospace;font-variant-nume
 tr.sum td{background:#F7F9FC;font-weight:700;border-top:1.5px solid var(--navy-l)}
 tr.big td{background:var(--navy);color:#fff;font-weight:700;font-size:14px}
 .det{font-size:10.5px;color:var(--soft);display:block;line-height:1.45}
+.sheet .det{font-size:10px;color:#5A6478;display:block;line-height:1.35}
 .ovin{width:100px;padding:3px 6px;font-size:12.5px;text-align:right}
 details{border:1px solid var(--line);border-radius:8px;background:#fff;margin-bottom:14px}
 summary{padding:10px 14px;cursor:pointer;font-size:13px;font-weight:700;color:var(--navy)}
 details .in{padding:0 14px 14px}
 /* ===== 帳票 ===== */
-#doc .sheet{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:14px;padding:15mm 13mm;color:#000;font-size:11.5px;line-height:1.55}
-.sheet h1{font-size:19px;text-align:center;letter-spacing:.22em;font-weight:700;border-bottom:2.5px solid var(--navy);padding-bottom:5px;margin-bottom:9px;color:var(--navy)}
-.sheet .meta{display:flex;justify-content:space-between;font-size:11px;margin-bottom:9px;gap:10px;flex-wrap:wrap}
-.sheet h3{font-size:12.5px;font-weight:700;background:var(--navy);color:#fff;padding:3px 8px;margin:9px 0 4px;border-radius:2px}
-.sheet table{border:1px solid #9AA3B2}
-.sheet th,.sheet td{border:1px solid #C6CCD8;padding:2.5px 6px;font-size:11px;line-height:1.45}
-.sheet tr.sum td{background:#EDF1F7}
-.sheet tr.big td{background:var(--navy);color:#fff}
-.sheet .fine{font-size:9.5px;color:#444;line-height:1.5;margin-top:6px}
+#doc .sheet{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:14px;padding:14mm 12mm;color:#000;font-size:13px;line-height:1.6}
+.sheet h1{font-size:23px;text-align:center;letter-spacing:.22em;font-weight:700;border-bottom:3px solid var(--navy);padding-bottom:6px;margin-bottom:10px;color:var(--navy)}
+.sheet .meta{display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+.sheet h3{font-size:14.5px;font-weight:700;background:var(--navy);color:#fff;padding:4px 9px;margin:10px 0 5px;border-radius:2px}
+.sheet table{border:1.5px solid #7C8899}
+.sheet th,.sheet td{border:1px solid #B9C1CE;padding:4px 8px;font-size:13px;line-height:1.5}
+.sheet td.n{font-weight:600}
+.sheet tr.sum td{background:#E5ECF7;font-weight:700;font-size:14px}
+.sheet tr.big td{background:var(--navy);color:#fff;font-weight:700;font-size:16px;padding:6px 8px}
+.sheet tr.hl td{background:#FCEDDC;color:#9A4A05;font-weight:700;font-size:15.5px;padding:5px 8px}
+.sheet tr.k td{font-weight:700;font-size:14px;background:#F6F8FB}
+.sheet .fine{font-size:11px;color:#333;line-height:1.55;margin-top:7px}
 .sheet .cmp th{background:#EDF1F7;color:var(--navy);text-align:center}
 .sheet .cmp td{text-align:right;font-family:"Roboto Mono",monospace}
 .sheet .cmp td:first-child{text-align:left;font-family:inherit}
@@ -95,17 +99,24 @@ details .in{padding:0 14px 14px}
   body{background:#fff}
   header,.wrap>.card,.wrap>details,.srcbar,#noprint{display:none!important}
   .wrap{max-width:none;padding:0;margin:0}
-  #doc .sheet{border:0;border-radius:0;margin:0;padding:0;font-size:9.4px;line-height:1.42}
+  #doc .sheet{border:0;border-radius:0;margin:0;padding:0;font-size:13px;line-height:1.55;
+    display:flex;flex-direction:column;min-height:275mm}
+  .sheet .foot{margin-top:auto;padding-top:5px}
   #doc .sheet+.sheet{page-break-before:always}
-  .sheet h1{font-size:15px;padding-bottom:3px;margin-bottom:5px}
-  .sheet h3{font-size:10.5px;padding:2px 6px;margin:5px 0 3px}
-  .sheet .meta{font-size:9.4px;margin-bottom:5px}
-  .sheet th,.sheet td{padding:1.3px 4px;font-size:9.4px;line-height:1.35}
-  .sheet .det{font-size:8.2px;line-height:1.3}
-  .sheet .fine{font-size:8.2px;margin-top:4px}
-  .sheet .cols{gap:6px}
+  .sheet h1{font-size:22px;padding-bottom:5px;margin-bottom:9px}
+  .sheet h3{font-size:14px;padding:3.5px 8px;margin:9px 0 4px}
+  .sheet .meta{font-size:13px;margin-bottom:9px}
+  .sheet th,.sheet td{padding:4.4px 8px;font-size:13px;line-height:1.5}
+  .sheet tr.sum td{font-size:14px}
+  .sheet tr.k td{font-size:14px}
+  .sheet tr.hl td{font-size:16px;padding:6px 8px}
+  .sheet tr.big td{font-size:17px;padding:7px 8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sheet .det{font-size:9.6px;line-height:1.3}
+  .sheet .fine{font-size:10.6px;margin-top:6px}
+  .sheet .cols{gap:8px}
   .sheet tr{page-break-inside:avoid}
-  @page{size:A4 portrait;margin:9mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:A4 portrait;margin:10mm}
 }
 </style>
 </head>
@@ -593,11 +604,11 @@ function drawDoc(ar,R){
 
  <h3>○ 資金計画</h3>
  <table>
-  <tr><td>売買代金</td><td class="n">${yen(price)}</td></tr>
-  ${renoVisible()?`<tr><td>リノベーション工事（Ｃ）</td><td class="n">${yen(reno+ar.sumR)}</td></tr>`:''}
-  <tr><td>諸費用合計（${isLoan()?'Ａ＋Ｂ':'Ａ'}）</td><td class="n">${yen(ar.sumA+sumB)}</td></tr>
-  <tr class="${isLoan()?'sum':'big'}"><td>お支払い総額</td><td class="n">${yen(total)}</td></tr>
-  ${isLoan()?`<tr><td>自己資金</td><td class="n">${yen(jiko)}</td></tr>
+  <tr class="k"><td>売買代金</td><td class="n">${yen(price)}</td></tr>
+  ${renoVisible()?`<tr class="k"><td>リノベーション工事（Ｃ）</td><td class="n">${yen(reno+ar.sumR)}</td></tr>`:''}
+  <tr class="k"><td>諸費用合計（${isLoan()?'Ａ＋Ｂ':'Ａ'}）</td><td class="n">${yen(ar.sumA+sumB)}</td></tr>
+  <tr class="hl"><td>お支払い総額</td><td class="n">${yen(total)}</td></tr>
+  ${isLoan()?`<tr class="k"><td>自己資金</td><td class="n">${yen(jiko)}</td></tr>
   <tr class="big"><td>お借入金額</td><td class="n">${yen(P.loan)}</td></tr>`:
   `<tr><td colspan="2" style="font-size:10px">現金でご用意いただく金額です。住宅ローンはご利用になりません。</td></tr>`}
  </table>
@@ -605,7 +616,7 @@ function drawDoc(ar,R){
  <h3>○ ${isLoan()?'毎月のお支払い':'ご購入後のご負担'}</h3>
  <table>
   ${isLoan()?`<tr><td>お借入条件</td><td class="n">${P.B.short}／${fixLabel(P.p.fix)} ${P.rate.toFixed(3)}％／${P.p.years}年</td></tr>
-  <tr><td>毎月のご返済額</td><td class="n">${yen(P.m)} 円/月</td></tr>`:''}
+  <tr class="hl"><td>毎月のご返済額</td><td class="n">${yen(P.m)} 円/月</td></tr>`:''}
   ${PTYPE==='mansion'?`<tr><td>管理費</td><td class="n">${yen(numv('kanri'))} 円/月</td></tr>
   <tr><td>修繕積立金</td><td class="n">${yen(numv('shuzen'))} 円/月</td></tr>
   <tr><td>駐車場</td><td class="n">${yen(numv('parking'))} 円/月</td></tr>`:''}
@@ -625,13 +636,13 @@ function drawDoc(ar,R){
  ${memo?`<h3 style="margin-top:7px">○ 特記事項</h3>
  <div style="border:1px solid #9AA3B2;padding:5px 8px;font-size:11px;line-height:1.55;white-space:pre-wrap">${esc(memo)}</div>`:''}
 
- <div class="fine" style="margin-top:6px;border-top:1px solid #C6CCD8;padding-top:5px">
+ <div class="foot"><div class="fine" style="margin-top:6px;border-top:1px solid #C6CCD8;padding-top:5px">
   ${isLoan()?`・お借入金額は${yen(P.B.loanUnit||100000)}円単位に切り上げています。毎月払いのみ（ボーナス併用なし）で計算しています。<br>
   ・金利は${M.date?jpDate(M.date)+'時点':'ご提示時点'}のもので、実行時の金利・審査結果により変わります。${chk('optKojo')?'住宅ローン控除は一般の既存住宅（借入限度2,000万円）で試算した初年度の目安です。':''}<br>`:''}
   ・登記費用・清算金・保険料は概算です。実額は見積・精算書によります。ご購入の4〜6ヶ月後に不動産取得税の納税通知が届きます。<br>
   ・引越費用、家具・家電・カーテン代は含まれていません。本書は概算であり、融資条件・諸費用・税額をお約束するものではありません。
  </div>
- <div style="text-align:right;margin-top:5px;font-size:9.5px">ViVi不動産株式会社　担当：　　　　　　　　</div></div>`;
+ <div style="text-align:right;margin-top:5px;font-size:11px">ViVi不動産株式会社　担当：　　　　　　　　</div></div></div>`;
 
  /* 2枚目：3行比較 */
  if(isLoan()&&chk('optCmp')&&R.length>1){
