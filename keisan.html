@@ -186,7 +186,7 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
  <div class="fld"><label>年税額（固定資産税＋都市計画税）</label><div class="unit"><input type="number" id="k_tax" value="98000" oninput="calcKotei()"><span class="u">円</span></div></div>
  <div class="fld"><label>決済日（引渡日）</label><input type="date" id="k_date" onchange="calcKotei()"></div>
  <div class="fld"><label>起算日</label>
-  <div class="seg" id="k_seg"><button data-v="1" class="on">1月1日</button><button data-v="4">4月1日</button></div>
+  <div class="seg" id="k_seg"><button data-v="1">1月1日</button><button data-v="4" class="on">4月1日</button></div>
  </div>
 </div>
 <div class="grid g3" style="margin-top:12px">
@@ -194,7 +194,7 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
   <div class="seg" id="k_seg2"><button data-v="buy" class="on">買主</button><button data-v="sell">売主</button></div>
  </div>
  <div class="fld"><label>端数処理</label>
-  <div class="seg" id="k_seg3"><button data-v="floor" class="on">切り捨て</button><button data-v="round">四捨五入</button></div>
+  <div class="seg" id="k_seg3"><button data-v="floor">切り捨て</button><button data-v="round" class="on">四捨五入</button></div>
  </div>
  <div class="fld"><label>翌年度分も精算する</label>
   <div class="seg" id="k_seg4"><button data-v="0" class="on">しない</button><button data-v="1">する（1年分を加算）</button></div>
@@ -212,7 +212,7 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
 
 <h3 class="sec">押さえておくこと</h3>
 <h4>起算日で金額が変わります</h4>
-<p>1月1日起算と4月1日起算では、買主の負担額が3か月分ほど変わります。<b>富山県では1月1日起算が一般的</b>ですが、これは慣習であって決まりではありません。必ず売買契約書に明記してください。「関東は1月1日、関西は4月1日」と言われますが、当事者の合意が優先します。</p>
+<p>1月1日起算と4月1日起算では、買主の負担額が3か月分ほど変わります。<b>当社は4月1日起算を基準</b>としています。ただしこれは慣習であって決まりではありません。必ず売買契約書に明記してください。「関東は1月1日、関西は4月1日」と言われますが、当事者の合意が優先します。</p>
 
 <h4>年税額をどこで確認するか</h4>
 <p>売主から<b>納税通知書（課税明細書）</b>を預かって、固定資産税と都市計画税の年税額を合計します。市街化調整区域など都市計画税がかからない地域もあるので、明細を見て判断してください。</p>
@@ -243,9 +243,17 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
 
 <div class="msg w"><b>課税標準は売買価格ではありません。</b>登録免許税は<b>固定資産税評価額</b>にかけて計算します。売買価格の1％といった概算とは根拠が違うので、正確に出すには課税明細書か評価証明書が必要です。抵当権設定だけは<b>借入額（債権額）</b>が課税標準です。</div>
 
-<div class="grid g2">
- <div class="fld"><label>土地の固定資産税評価額</label><div class="unit"><input type="number" id="t_land" value="6000000" oninput="calcTouki()"><span class="u">円</span></div><div style="font-size:12.5px;color:var(--soft);margin-top:3px">マンションは「敷地全体の評価額×敷地権割合」</div></div>
+<div class="fld" style="margin-bottom:12px"><label>土地の評価額の入れ方</label>
+ <div class="seg" id="t_mode"><button data-v="direct" class="on">持分の評価額を直接入力</button><button data-v="mansion">敷地全体の評価額 × 敷地権割合（マンション）</button></div>
+</div>
+<div class="grid g2" id="t_wrapDirect">
+ <div class="fld"><label>土地の固定資産税評価額（持分）</label><div class="unit"><input type="number" id="t_land" value="6000000" oninput="calcTouki()"><span class="u">円</span></div></div>
  <div class="fld"><label>建物の固定資産税評価額</label><div class="unit"><input type="number" id="t_bldg" value="4000000" oninput="calcTouki()"><span class="u">円</span></div></div>
+</div>
+<div class="grid g3" id="t_wrapMansion" style="display:none">
+ <div class="fld"><label>敷地全体の土地評価額</label><div class="unit"><input type="number" id="t_landAll" value="480000000" oninput="calcTouki()"><span class="u">円</span></div></div>
+ <div class="fld"><label>敷地権割合</label><input type="text" id="t_ratio" value="5230/480000" oninput="calcTouki()" placeholder="5230/480000"><div style="font-size:12.5px;color:var(--soft);margin-top:3px">「480000分の5230」「0.0109」でも可</div></div>
+ <div class="fld"><label>建物（専有部分）の評価額</label><div class="unit"><input type="number" id="t_bldg2" value="4200000" oninput="calcTouki()"><span class="u">円</span></div></div>
 </div>
 <div class="grid g2" style="margin-top:12px">
  <div class="fld"><label>借入額（債権額）</label><div class="unit"><input type="number" id="t_loan" value="20000000" oninput="calcTouki()"><span class="u">円</span></div><div style="font-size:12.5px;color:var(--soft);margin-top:3px">現金購入なら0</div></div>
@@ -253,6 +261,10 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
   <div class="seg" id="t_seg"><button data-v="1" class="on">取得する</button><button data-v="0">取得しない</button></div>
   <div style="font-size:12.5px;color:var(--soft);margin-top:3px">建物と抵当権の税率が下がります</div>
  </div>
+</div>
+<div class="grid g2" style="margin-top:12px">
+ <div class="fld"><label>司法書士報酬（所有権移転）</label><div class="unit"><input type="number" id="t_sh1" value="50000" oninput="calcTouki()"><span class="u">円</span></div></div>
+ <div class="fld"><label>司法書士報酬（抵当権設定）</label><div class="unit"><input type="number" id="t_sh2" value="50000" oninput="calcTouki()"><span class="u">円</span></div></div>
 </div>
 
 <div id="t_res"></div>
@@ -287,7 +299,7 @@ code{background:#EDF1F7;padding:2px 6px;border-radius:4px;font-family:"Roboto Mo
 <li>土地と建物は<b>それぞれ別に</b>計算します。合算してから税率をかけません</li>
 </ol>
 
-<div class="msg o"><b>司法書士報酬は別です。</b>このツールで出るのは登録免許税（実費）だけです。実際の請求は「登録免許税＋司法書士報酬＋登記事項証明書代など」になります。報酬は事務所によって幅がありますが、所有権移転と抵当権設定で合わせて7〜12万円程度が目安です。</div>
+<div class="msg o"><b>司法書士報酬について。</b>初期値は当社の基準額として、所有権移転50,000円・抵当権設定50,000円を入れてあります。事務所や案件の内容によって変わるので、見積が出ている場合はその金額に書き換えてください。なお、登記事項証明書代・登記情報の取得費・郵送料などの実費は別途かかります。</div>
 
 </div></div>
 </div>
@@ -463,29 +475,51 @@ segInit('k_seg',calcKotei);segInit('k_seg2',calcKotei);segInit('k_seg3',calcKote
 const std=v=>{const x=Math.floor(v/1000)*1000;return x<1000?1000:x;};
 const tax100=v=>{const x=Math.floor(v/100)*100;return x<1000?1000:x;};
 function calcTouki(){
- const land=numv('t_land'),bldg=numv('t_bldg'),loan=numv('t_loan'),cert=segv('t_seg')==='1';
+ const mode=segv('t_mode');
+ $('t_wrapDirect').style.display=mode==='direct'?'':'none';
+ $('t_wrapMansion').style.display=mode==='mansion'?'':'none';
+ let land,bldg,ratio=null,landAll=0;
+ if(mode==='mansion'){
+  landAll=numv('t_landAll');ratio=parseRatio($('t_ratio').value);
+  if(ratio===null){$('t_res').innerHTML='<div class="msg n">敷地権割合を確認してください。「5230/480000」または「0.0109」の形で入力します。</div>';$('t_steps').innerHTML='';return;}
+  land=landAll*ratio;bldg=numv('t_bldg2');
+ }else{land=numv('t_land');bldg=numv('t_bldg');}
+ const loan=numv('t_loan'),cert=segv('t_seg')==='1';
+ const sh1=numv('t_sh1'),sh2=loan>0?numv('t_sh2'):0;
  const rL=1.5,rB=cert?0.3:2.0,rM=cert?0.1:0.4;
  const sL=std(land),sB=std(bldg),sM=loan>0?std(loan):0;
  const tL=land>0?tax100(sL*rL/100):0;
  const tB=bldg>0?tax100(sB*rB/100):0;
  const tM=loan>0?tax100(sM*rM/100):0;
  const sum=tL+tB+tM;
- $('t_res').innerHTML=box('登録免許税の合計',yen(sum),
-  `所有権移転 ${yen(tL+tB)}円　＋　抵当権設定 ${yen(tM)}円<br>司法書士報酬・登記事項証明書代などは含みません`)
+ const grand=sum+sh1+sh2;
+ $('t_res').innerHTML=`<div class="res two">
+  <div><div class="ttl">所有権移転費用</div><div class="big">${yen(tL+tB+sh1)}<span class="yen">円</span></div>
+   <div class="sub">登録免許税 ${yen(tL+tB)}円 ＋ 司法書士報酬 ${yen(sh1)}円</div></div>
+  <div><div class="ttl">抵当権設定費用</div><div class="big">${yen(tM+sh2)}<span class="yen">円</span></div>
+   <div class="sub">${loan>0?`登録免許税 ${yen(tM)}円 ＋ 司法書士報酬 ${yen(sh2)}円`:'借入がないため発生しません'}</div></div>
+ </div>`
+ +box('登記費用の合計',yen(grand),`登録免許税 ${yen(sum)}円　＋　司法書士報酬 ${yen(sh1+sh2)}円<br>登記事項証明書代・郵送料などの実費は含みません`)
  +`<table><tr><th>登記</th><th class="n">課税標準</th><th class="n">税率</th><th class="n">税額</th></tr>
   <tr><td>土地の所有権移転</td><td class="n">${yen(sL)}</td><td class="n">${rL}％</td><td class="n">${yen(tL)}</td></tr>
   <tr><td>建物の所有権移転</td><td class="n">${yen(sB)}</td><td class="n">${rB}％</td><td class="n">${yen(tB)}</td></tr>
   ${loan>0?`<tr><td>抵当権の設定</td><td class="n">${yen(sM)}</td><td class="n">${rM}％</td><td class="n">${yen(tM)}</td></tr>`:''}
-  <tr style="background:#FCEDDC;font-weight:700"><td>合計</td><td class="n">―</td><td class="n">―</td><td class="n">${yen(sum)}</td></tr></table>
+  <tr><td>登録免許税 小計</td><td class="n">―</td><td class="n">―</td><td class="n">${yen(sum)}</td></tr>
+  <tr><td>司法書士報酬（所有権移転）</td><td class="n">―</td><td class="n">―</td><td class="n">${yen(sh1)}</td></tr>
+  ${loan>0?`<tr><td>司法書士報酬（抵当権設定）</td><td class="n">―</td><td class="n">―</td><td class="n">${yen(sh2)}</td></tr>`:''}
+  <tr style="background:#FCEDDC;font-weight:700"><td>登記費用 合計</td><td class="n">―</td><td class="n">―</td><td class="n">${yen(grand)}</td></tr></table>
   ${cert?'<div class="msg o">住宅用家屋証明書を取得する前提です。建物0.3％・抵当権0.1％の軽減が適用されています。</div>':'<div class="msg n">住宅用家屋証明書なしの本則税率です。建物2.0％・抵当権0.4％。証明書が取れれば'+yen((tB-tax100(sB*0.3/100))+(loan>0?tM-tax100(sM*0.1/100):0))+'円安くなります。</div>'}`;
- $('t_steps').innerHTML=steps([
-  ['① 課税標準を出す（1,000円未満切り捨て）',`土地 ${yen(land)} → ${yen(sL)}　／　建物 ${yen(bldg)} → ${yen(sB)}${loan>0?`　／　債権額 ${yen(loan)} → ${yen(sM)}`:''}`],
+ const pre=mode==='mansion'
+  ?[['① 持分の土地評価額を出す',`敷地全体 ${yen(landAll)}円 × 敷地権割合 ${ratio.toFixed(8)} ＝ ${yen(land)}円`]]:[];
+ $('t_steps').innerHTML=steps(pre.concat([
+  [(mode==='mansion'?'②':'①')+' 課税標準を出す（1,000円未満切り捨て）',`土地 ${yen(land)} → ${yen(sL)}　／　建物 ${yen(bldg)} → ${yen(sB)}${loan>0?`　／　債権額 ${yen(loan)} → ${yen(sM)}`:''}`],
   ['② 土地に税率をかける',`${yen(sL)} × ${rL}％ ＝ ${yen(sL*rL/100)} → 100円未満切り捨て ${yen(tL)}円`],
   ['③ 建物に税率をかける',`${yen(sB)} × ${rB}％ ＝ ${yen(sB*rB/100)} → 100円未満切り捨て ${yen(tB)}円${cert?'（住宅用家屋証明あり）':'（証明なしの本則）'}`],
   loan>0?['④ 抵当権設定',`${yen(sM)} × ${rM}％ ＝ ${yen(sM*rM/100)} → 100円未満切り捨て ${yen(tM)}円`]:['④ 抵当権設定','借入がないため0円'],
-  ['⑤ 合計',`${yen(tL)} ＋ ${yen(tB)}${loan>0?` ＋ ${yen(tM)}`:''} ＝ ${yen(sum)}円`,1]
- ]);}
-segInit('t_seg',calcTouki);
+  ['⑤ 登録免許税の合計',`${yen(tL)} ＋ ${yen(tB)}${loan>0?` ＋ ${yen(tM)}`:''} ＝ ${yen(sum)}円`],
+  ['⑥ 司法書士報酬を加える',`${yen(sum)} ＋ 所有権移転 ${yen(sh1)}${loan>0?` ＋ 抵当権設定 ${yen(sh2)}`:''} ＝ ${yen(grand)}円`,1]
+ ]));}
+segInit('t_seg',calcTouki);segInit('t_mode',calcTouki);
 
 /* ===== 3. 管理費等 ===== */
 function calcKanri(){
