@@ -216,6 +216,17 @@ details .in{padding:0 14px 14px}
   <label class="chk"><input type="checkbox" id="optSch" onchange="onOpt()">返済予定表を付ける</label>
  </div>
  <div id="optLoanOnly"></div>
+ <div class="grid g2" style="margin-top:11px;max-width:520px">
+  <div class="fld"><label>ビビットちゃんの表示</label>
+   <select id="mascotMode" onchange="calc()">
+    <option value="auto">自動（余白に合わせる）</option>
+    <option value="body">全身で固定</option>
+    <option value="face">顔だけで固定</option>
+    <option value="off">表示しない</option>
+   </select>
+  </div>
+  <div class="fld" style="align-self:end"><div class="note" id="mascotNote" style="margin:0"></div></div>
+ </div>
  <div class="fld" id="wrapNensyu" style="margin-top:11px;max-width:280px;display:none"><label>ご年収（返済負担率の計算用）</label><div class="unit"><input type="number" id="nensyu" value="0" oninput="calc()"><span class="u">円</span></div></div>
  <div class="note">いずれもチェックしたときだけ帳票に追加されます。比較表と返済予定表は2枚目以降に印刷されます。</div>
 </div></div>
@@ -701,20 +712,24 @@ function fitMascot(){
  const sh=$('doc').querySelector('.sheet');if(!sh)return;
  const m=sh.querySelector('.mascot');if(!m)return;
  const body=m.querySelector('.mb'),face=m.querySelector('.mf');
+ const note=$('mascotNote');
+ const mode=($('mascotMode')&&$('mascotMode').value)||'auto';
+ const mm=v=>Math.round(v*MM);
+ const say=t=>{if(note)note.textContent=t;};
+ if(mode==='off'){m.style.display='none';say('表示しない設定です');return;}
  m.style.display='none';
  const base=sh.offsetHeight;                 /* マスコットなしの全高（padding込み） */
  m.style.display='';
- const target=Math.round(297*MM);            /* A4全高 */
- const avail=target-base-Math.round(2*MM)-4; /* 上余白と安全代を引いた残り */
- const mm=v=>Math.round(v*MM);
- if(avail<mm(11)){m.style.display='none';return;}
- if(avail<mm(36)){                           /* 狭いときは正方形の顔 */
-  body.style.display='none';face.style.display='';
-  face.style.height=Math.min(avail,mm(32))+'px';
- }else{                                      /* 余裕があれば全身 */
-  face.style.display='none';body.style.display='';
-  body.style.height=Math.min(avail,mm(52))+'px';
- }}
+ const avail=Math.round(297*MM)-base-mm(2)-4;/* A4の残り高さ */
+ const show=(el,other,h,lb)=>{other.style.display='none';el.style.display='';
+  el.style.height=Math.max(mm(10),h)+'px';say(lb+'　高さ約'+Math.round(Math.max(mm(10),h)/MM)+'mm');};
+ if(mode==='body'){show(body,face,Math.min(avail>0?avail:mm(52),mm(52)),'全身');return;}
+ if(mode==='face'){show(face,body,Math.min(avail>0?avail:mm(32),mm(32)),'顔');return;}
+ if(avail<mm(9)){m.style.display='none';say('余白が足りないため表示していません（固定にもできます）');return;}
+ if(avail<mm(36))show(face,body,Math.min(avail,mm(32)),'顔');
+ else show(body,face,Math.min(avail,mm(52)),'全身');}
+window.addEventListener('resize',()=>{clearTimeout(window.__mt);window.__mt=setTimeout(fitMascot,150)});
+window.addEventListener('load',fitMascot);
 
 function schHTML(P){
  const n=P.p.years*12,r=P.rate/100/12;
@@ -745,15 +760,17 @@ function onTanto(){
 const SKEY='vivi_shohiyo_cases';
 const FIELDS=['pname','cname','tantoSel','tanto','mkdate','sdate','price','taxbld','reno','jiko','tax','kanri','shuzen','parking','nensyu','shutoku','memo'];
 const OPTS=['optCmp','optRatio','optKojo','optSch'];
+const SELS=['mascotMode'];
 function snap(){const d={ptype:PTYPE,owner:OWNER,disc:DISC,pay:PAY,bai:BAI,loank:LOANK,others:JSON.parse(JSON.stringify(OTHERS)),plans:JSON.parse(JSON.stringify(PLANS)),f:{},op:{},ovm:OVM,ovv:OVV};
  FIELDS.forEach(k=>d.f[k]=$(k)?$(k).value:'');
  OPTS.forEach(k=>d.op[k]=chk(k));
+ SELS.forEach(k=>{if($(k))d.f[k]=$(k).value;});
  return d;}
 function restore(d){
  PTYPE=d.ptype||'mansion';OWNER=d.owner||'ko';DISC=d.disc||0;BAI=d.bai||'kami';LOANK=d.loank||'denshi';PAY=d.pay||'loan';
  OVM=d.ovm||{};OVV=d.ovv||{};OTHERS=d.others||[];FEESIG='';
  PLANS=d.plans||PLANS;
- FIELDS.forEach(k=>{if($(k))$(k).value=(d.f||{})[k]||'';});
+ FIELDS.concat(SELS).forEach(k=>{if($(k)&&(d.f||{})[k]!==undefined)$(k).value=d.f[k];});
  OPTS.forEach(k=>{if($(k))$(k).checked=!!(d.op||{})[k];});
  applySeg();$('wrapNensyu').style.display=chk('optRatio')?'':'none';
  $('tanto').style.display=$('tantoSel').value==='__other'?'':'none';
