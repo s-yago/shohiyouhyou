@@ -97,7 +97,7 @@ details .in{padding:0 14px 14px}
 @media(max-width:640px){.sheet .cols{grid-template-columns:1fr}}
 @media print{
   body{background:#fff}
-  header,.wrap>.card,.wrap>details,.srcbar,#noprint{display:none!important}
+  header,.wrap>.card,.wrap>details,.srcbar,#noprint,#dlg{display:none!important}
   .wrap{max-width:none;padding:0;margin:0}
   #doc .sheet{border:0;border-radius:0;margin:0;padding:0;font-size:13px;line-height:1.55;
     display:flex;flex-direction:column;min-height:275mm}
@@ -634,18 +634,19 @@ function drawDoc(ar,R){
  if(ref.length)h+=`<h3>○ 参考</h3><table>${ref.join('')}</table>`;
 
  const memo=($('memo')&&$('memo').value||'').trim();
- h+=`</div></div>
-
- ${memo?`<h3 style="margin-top:7px">○ 特記事項</h3>
- <div style="border:1px solid #9AA3B2;padding:5px 8px;font-size:11px;line-height:1.55;white-space:pre-wrap">${esc(memo)}</div>`:''}
-
- <div class="foot"><div class="fine" style="margin-top:6px;border-top:1px solid #C6CCD8;padding-top:5px">
+ h+=`<div class="fine" style="margin-top:7px;border-top:1px solid #C6CCD8;padding-top:5px">
   ${isLoan()?`・お借入金額は${yen(P.B.loanUnit||100000)}円単位に切り上げています。毎月払いのみ（ボーナス併用なし）で計算しています。<br>
   ・金利は${M.date?jpDate(M.date)+'時点':'ご提示時点'}のもので、実行時の金利・審査結果により変わります。${chk('optKojo')?'住宅ローン控除は一般の既存住宅（借入限度2,000万円）で試算した初年度の目安です。':''}<br>`:''}
   ・登記費用・清算金・保険料は概算です。実額は見積・精算書によります。ご購入の4〜6ヶ月後に不動産取得税の納税通知が届きます。<br>
   ${PTYPE==='tochi'?'・建築工事費、外構工事費、地盤改良費は含まれていません。<br>':'・引越費用、家具・家電・カーテン代は含まれていません。<br>'}・本書は概算であり、融資条件・諸費用・税額をお約束するものではありません。
  </div>
- <div style="text-align:right;margin-top:5px;font-size:11px">ViVi不動産株式会社　担当：　　　　　　　　</div></div></div>`;
+
+ </div></div>
+
+ <div class="foot">
+ ${memo?`<h3 style="margin-top:7px">○ 特記事項</h3>
+ <div style="border:1px solid #9AA3B2;padding:6px 9px;font-size:12px;line-height:1.6;white-space:pre-wrap">${esc(memo)}</div>`:''}
+ <div style="text-align:right;margin-top:6px;font-size:11.5px">ViVi不動産株式会社　担当：　　　　　　　　</div></div></div>`;
 
  /* 2枚目：3行比較 */
  if(isLoan()&&chk('optCmp')&&R.length>1){
