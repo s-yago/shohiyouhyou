@@ -351,13 +351,13 @@ const FEE_A=[
  {k:'chukai',n:'仲介手数料（税込）'},
  {k:'seisan',n:'固定資産税等 清算金'},
  {k:'inshi1',n:'印紙代（売買契約書）'},
- {k:'kanriS',n:'管理費等 清算金',only:'mansion',manual:1},
- {k:'kikin',n:'管理基金・修繕積立基金',only:'mansion',manual:1},
+ {k:'kanriS',n:'管理費等 清算金',only:'mansion'},
+ {k:'kikin',n:'管理基金・修繕積立基金',only:'mansion',manual:1,hint:'管理規約により必要な場合にご入力ください'},
  {k:'hyoji',n:'表示登記費用',only:'kodate'},
  {k:'bougi',n:'防蟻費用',only:'kodate'},
- {k:'kaitai',n:'解体費用',only:'tochi',manual:1},
- {k:'chimoku',n:'地目変更費用',only:'tochi',manual:1},
- {k:'hikikomi',n:'上下水道引込費用',only:'tochi',manual:1},
+ {k:'kaitai',n:'解体費用',only:'tochi',manual:1,hint:'お見積り金額をご入力ください'},
+ {k:'chimoku',n:'地目変更費用',only:'tochi',manual:1,hint:'土地家屋調査士報酬をご入力ください'},
+ {k:'hikikomi',n:'上下水道引込費用',only:'tochi',manual:1,hint:'前面道路からの引込工事費。市の負担金が別途かかる場合があります'},
  {k:'inspect',n:'既存住宅状況調査（インスペクション）'},
  {k:'kasai',n:'火災・地震保険料（5年一括）',not:'tochi'}
 ];
@@ -403,18 +403,19 @@ function calcAR(){
  o.seisan=numv('tax');d.seisan='年税額と同額（実際は決済日で日割精算します）';
  o.inshi1=BAI==='kami'?inshiB(price):0;
  d.inshi1=BAI==='kami'?'紙の契約／売買金額に応じた軽減後の税額':'電子契約のため非課税';
- o.kanriS=0;d.kanriS='日割精算額をご入力ください';
- o.kikin=0;d.kikin='管理規約により必要な場合にご入力ください';
+ o.kanriS=(numv('kanri')+numv('shuzen')+numv('parking'))*2;
+ d.kanriS='管理費・修繕積立金・駐車場代の2か月分';
+ o.kikin=0;d.kikin='';
  o.hyoji=100000;d.hyoji='土地家屋調査士報酬の目安';
  o.bougi=200000;d.bougi='床下の防蟻処理の目安';
- o.kaitai=0;d.kaitai='お見積り金額をご入力ください';
- o.chimoku=0;d.chimoku='土地家屋調査士報酬をご入力ください';
- o.hikikomi=0;d.hikikomi='前面道路からの引込工事費。市の負担金が別途かかる場合があります';
+ o.kaitai=0;d.kaitai='';
+ o.chimoku=0;d.chimoku='';
+ o.hikikomi=0;d.hikikomi='';
  o.inspect=66000;d.inspect='既存住宅状況調査の一般的な費用';
  o.kasai=PTYPE==='mansion'?200000:300000;
  d.kasai=PTYPE==='mansion'?'マンション 5年一括の目安':'一戸建 5年一括の目安';
  o.inshi3=inshiU(reno);d.inshi3='工事請負金額に応じた軽減後の税額';
- FEE_A.concat(FEE_R).forEach(f=>{const v=ov(f.k);if(v!==null){o[f.k]=v;d[f.k]=f.manual?d[f.k]:'入力値';}});
+ FEE_A.concat(FEE_R).forEach(f=>{const v=ov(f.k);if(v!==null){o[f.k]=v;d[f.k]='';}});
  let sumA=0,sumR=0;
  FEE_A.forEach(f=>{if(feeVisible(f))sumA+=(o[f.k]||0);});
  OTHERS.forEach(x=>{sumA+=(parseFloat(x.val)||0);});
@@ -425,7 +426,7 @@ function calcB(bankKey,loan,years,pl){
  const B=M.banks[bankKey]||M.banks.other,o={},d={};
  const mv=k=>{const v=parseFloat(pl&&pl[k]);return isNaN(v)?0:v;};
  if(!isLoan()){FEE_B.forEach(f=>{o[f.k]=0;d[f.k]='';});return {o:o,d:d,sum:0};}
- if(B.hosho==='manual'){o.hosho=mv('hoshoMan');d.hosho=o.hosho>0?'金融機関の提示額':'（金額をご入力ください）';}
+ if(B.hosho==='manual'){o.hosho=mv('hoshoMan');d.hosho='';}
  else if(B.hosho==='ikkatsu'&&B.hoshoRate){const rr=hoshoAdj(B.hoshoRate,years);o.hosho=loan*rr/100;d.hosho=`借入額×${rr.toFixed(2)}％（${years}年・一括前払い）`;}
  else{o.hosho=0;d.hosho=B.hosho==='inrate'?'お借入金利に含まれます（別途のご負担なし）':'保証料0円（金融機関負担）';}
  o.danshin=0;d.danshin='お借入金利に含まれます';
@@ -434,11 +435,11 @@ function calcB(bankKey,loan,years,pl){
  o.denshiFee=LOANK==='denshi'?5500:0;
  d.denshiFee=LOANK==='denshi'?'電子契約システム利用料':'紙の契約のため計上なし';
  o.teitou=loan*0.001+50000;d.teitou='登録免許税0.1％（軽減後）＋司法書士報酬の概算';
- if(B.jimuType==='manual'){o.jimu=mv('jimuMan');d.jimu=o.jimu>0?'金融機関の提示額':'（金額をご入力ください）';}
+ if(B.jimuType==='manual'){o.jimu=mv('jimuMan');d.jimu='';}
  else if(B.jimuType==='rate'){o.jimu=loan*(B.jimuRate||0)/100;d.jimu=`借入額×${B.jimuRate}％`;}
  else{o.jimu=B.jimuFixed||0;d.jimu=`${yen(B.jimuFixed||0)}円${B.jimuAlt?`（条件により${yen(B.jimuAlt)}円）`:''}`;}
  o.otherB=0;d.otherB='';
- FEE_B.forEach(f=>{const v=ov(f.k);if(v!==null){o[f.k]=v;d[f.k]='入力値';}});
+ FEE_B.forEach(f=>{const v=ov(f.k);if(v!==null){o[f.k]=v;d[f.k]='';}});
  let sum=0;FEE_B.forEach(f=>{if(feeVisible(f))sum+=(o[f.k]||0);});
  return {o:o,d:d,sum:sum};}
 
@@ -522,7 +523,7 @@ function syncReno(from){
 function buildFeeEdit(res){
  const sig=PTYPE+'|'+OWNER+'|'+BAI+LOANK+'|'+OTHERS.length+'|'+Object.keys(OVM).map(k=>k+OVM[k]).join(',');
  const rowsOf=list=>list.filter(feeVisible).map(f=>{
-  if(f.manual)return `<tr><td>${f.n}<span class="det">${res.d[f.k]||''}</span></td>
+  if(f.manual)return `<tr><td>${f.n}<span class="det">${f.hint||''}</span></td>
    <td class="n" style="color:var(--soft)">―</td>
    <td style="text-align:center;font-size:11px;color:var(--soft)">手入力</td>
    <td class="n" style="width:120px"><input class="ovin num" type="number" id="ov_${f.k}" value="${OVV[f.k]!==undefined?OVV[f.k]:''}" oninput="setOvv('${f.k}',this.value)"></td></tr>`;
