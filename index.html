@@ -189,7 +189,7 @@ details .in{padding:0 14px 14px}
     <div><div style="font-size:10.5px;color:var(--soft);margin-bottom:2px">売買契約</div>
      <div class="seg" id="segBai"><button data-v="kami" class="on">紙</button><button data-v="denshi">電子</button></div></div>
     <div id="wrapSegLoan"><div style="font-size:10.5px;color:var(--soft);margin-bottom:2px">金銭消費貸借契約（銀行）</div>
-     <div class="seg" id="segLoan"><button data-v="denshi" class="on">電子</button><button data-v="kami">紙</button></div></div>
+     <div class="seg" id="segLoan"><button data-v="kami" class="on">紙</button><button data-v="denshi">電子</button></div></div>
    </div>
    <div class="note" id="keiyakuNote"></div>
   </div>
@@ -258,6 +258,11 @@ details .in{padding:0 14px 14px}
 
 <script>
 const $=id=>document.getElementById(id);
+/* 数値欄にカーソルがある状態でスクロールすると値が変わってしまうのを防ぐ */
+document.addEventListener('wheel',function(e){
+ const t=e.target;
+ if(t&&t.tagName==='INPUT'&&t.type==='number'&&document.activeElement===t)t.blur();
+},{passive:true});
 const yen=n=>Math.round(n||0).toLocaleString('ja-JP');
 const numv=id=>{const e=$(id);const v=e?parseFloat(e.value):0;return isNaN(v)?0:v;};
 const chk=id=>{const e=$(id);return e?e.checked:false;};
@@ -269,19 +274,19 @@ const FIXDEF=[['f0','変動',0],['f2','2年固定',2],['f3','3年固定',3],['f5
 const fixLabel=k=>(FIXDEF.find(x=>x[0]===k)||[,'—'])[1];
 const emptyR=()=>({f0:null,f2:null,f3:null,f5:null,f10:null,f15:null,f20:null,fAll:null});
 const BASE={date:'',banks:{
- hokugin:{name:'北陸銀行',short:'北銀',rates:emptyR(),base:emptyR(),discMax:1.70,maxYear:40,
+ hokugin:{name:'北陸銀行',short:'北陸銀行',rates:emptyR(),base:emptyR(),discMax:1.70,maxYear:40,
   availFix:['f0','f2','f3','f5','f10'],jimuType:'fixed',jimuFixed:220000,jimuRate:0,jimuAlt:null,
   hosho:'inrate',hoshoRate:0,loanUnit:100000},
- rokin:{name:'まるっと500（北陸ろうきん）',short:'ろうきん500',rates:emptyR(),base:emptyR(),discMax:1.35,maxYear:40,
+ rokin:{name:'まるっと500（北陸ろうきん）',short:'北陸労金',rates:emptyR(),base:emptyR(),discMax:1.35,maxYear:40,
   availFix:['f0','f3','f5','f10','f15','f20','fAll'],jimuType:'fixed',jimuFixed:198000,jimuRate:0,jimuAlt:220000,
   hosho:'none',hoshoRate:0,loanUnit:100000},
- rokina:{name:'まるっと500α（北陸ろうきん）',short:'ろうきん500α',rates:emptyR(),base:emptyR(),discMax:1.25,maxYear:40,
+ rokina:{name:'まるっと500α（北陸ろうきん）',short:'北陸労金α',rates:emptyR(),base:emptyR(),discMax:1.25,maxYear:40,
   availFix:['f0','f2','f3','f5','f10','f15','f20','fAll'],jimuType:'fixed',jimuFixed:198000,jimuRate:0,jimuAlt:220000,
   hosho:'none',hoshoRate:0,loanUnit:100000},
- ichigin:{name:'富山第一銀行（プライム住宅ローン）',short:'一銀',rates:emptyR(),base:emptyR(),discMax:1.60,maxYear:50,
+ ichigin:{name:'富山第一銀行（プライム住宅ローン）',short:'富山第一銀行',rates:emptyR(),base:emptyR(),discMax:1.60,maxYear:50,
   availFix:['f0','f2','f3','f5','f10'],jimuType:'fixed',jimuFixed:220000,jimuRate:0,jimuAlt:330000,
   hosho:'none',hoshoRate:0,loanUnit:100000},
- other:{name:'その他（手入力）',short:'他行',rates:emptyR(),base:emptyR(),discMax:null,maxYear:35,
+ other:{name:'その他（手入力）',short:'金融機関',rates:emptyR(),base:emptyR(),discMax:null,maxYear:35,
   availFix:['f0','f2','f3','f5','f10','f15','f20','fAll'],jimuType:'manual',jimuFixed:0,jimuRate:0,jimuAlt:null,
   hosho:'manual',hoshoRate:0,loanUnit:100000}
 }};
@@ -358,7 +363,7 @@ const inshiB=p=>p<=1e6?500:p<=5e6?1000:p<=1e7?5000:p<=5e7?10000:30000;
 const inshiK=p=>p<=5e6?2000:p<=1e7?10000:p<=5e7?20000:60000;
 const inshiU=p=>p<=2e6?200:p<=3e6?500:p<=5e6?1000:p<=1e7?5000:p<=5e7?10000:30000;
 const hoshoAdj=(b,y)=>b*(y<=20?.72:y<=25?.845:y<=30?.927:y<=35?1:y<=40?1.07:1.13);
-var PTYPE='mansion',OWNER='ko',DISC=0,BAI='kami',LOANK='denshi',PAY='loan';
+var PTYPE='mansion',OWNER='ko',DISC=0,BAI='kami',LOANK='kami',PAY='loan';
 const isLoan=()=>PAY==='loan';
 var OVM={},OVV={};   /* 項目ごとの 自動/入力 と、その入力値 */
 
@@ -374,7 +379,6 @@ const FEE_A=[
  {k:'kaitai',n:'解体費用',only:'tochi',manual:1,hint:'お見積り金額をご入力ください'},
  {k:'chimoku',n:'地目変更費用',only:'tochi',manual:1,hint:'土地家屋調査士報酬をご入力ください'},
  {k:'hikikomi',n:'上下水道引込費用',only:'tochi',manual:1,hint:'前面道路からの引込工事費。市の負担金が別途かかる場合があります'},
- {k:'inspect',n:'既存住宅状況調査（インスペクション）'},
  {k:'kasai',n:'火災・地震保険料（5年一括）',not:'tochi'}
 ];
 var OTHERS=[];   /* 購入に関する諸費用の「その他」可変行 */
@@ -394,7 +398,6 @@ const ALLFEE=FEE_A.concat(FEE_R,FEE_B);
 function feeVisible(f){
  if(f.only&&PTYPE!==f.only)return false;
  if(f.not&&PTYPE===f.not)return false;
- if(PTYPE==='tochi'&&f.k==='inspect')return false;
  return true;}
 function renoVisible(){return PTYPE!=='tochi';}
 function isManual(k){const f=ALLFEE.find(x=>x.k===k);return!!(f&&f.manual);}
@@ -427,7 +430,6 @@ function calcAR(){
  o.kaitai=0;d.kaitai='';
  o.chimoku=0;d.chimoku='';
  o.hikikomi=0;d.hikikomi='';
- o.inspect=66000;d.inspect='既存住宅状況調査の一般的な費用';
  o.kasai=PTYPE==='mansion'?200000:300000;
  d.kasai=PTYPE==='mansion'?'マンション 5年一括の目安':'一戸建 5年一括の目安';
  o.inshi3=inshiU(reno);d.inshi3='工事請負金額に応じた軽減後の税額';
@@ -478,9 +480,9 @@ const pmt=(loan,rate,years)=>{const r=rate/100/12,n=years*12;
  return loan*r/(1-Math.pow(1+r,-n));};
 
 /* ===== プラン ===== */
-var PLANS=[{bank:'hokugin',fix:'f0',rate:'',years:35,jimuMan:'',hoshoMan:''},
- {bank:'rokin',fix:'f0',rate:'',years:35,jimuMan:'',hoshoMan:''},
- {bank:'ichigin',fix:'f0',rate:'',years:35,jimuMan:'',hoshoMan:''}];
+var PLANS=[{bank:'ichigin',fix:'f2',rate:'',years:35,jimuMan:'',hoshoMan:''},
+ {bank:'hokugin',fix:'f2',rate:'',years:35,jimuMan:'',hoshoMan:''},
+ {bank:'rokin',fix:'f3',rate:'',years:35,jimuMan:'',hoshoMan:''}];
 function nPlans(){return (isLoan()&&chk('optCmp'))?3:1;}
 function autoRate(bank,fix){const B=M.banks[bank];if(!B)return null;const v=B.rates[fix];return(v===null||v===undefined)?null:v;}
 function buildPlans(){
@@ -767,7 +769,7 @@ function snap(){const d={ptype:PTYPE,owner:OWNER,disc:DISC,pay:PAY,bai:BAI,loank
  SELS.forEach(k=>{if($(k))d.f[k]=$(k).value;});
  return d;}
 function restore(d){
- PTYPE=d.ptype||'mansion';OWNER=d.owner||'ko';DISC=d.disc||0;BAI=d.bai||'kami';LOANK=d.loank||'denshi';PAY=d.pay||'loan';
+ PTYPE=d.ptype||'mansion';OWNER=d.owner||'ko';DISC=d.disc||0;BAI=d.bai||'kami';LOANK=d.loank||'kami';PAY=d.pay||'loan';
  OVM=d.ovm||{};OVV=d.ovv||{};OTHERS=d.others||[];FEESIG='';
  PLANS=d.plans||PLANS;
  FIELDS.concat(SELS).forEach(k=>{if($(k)&&(d.f||{})[k]!==undefined)$(k).value=d.f[k];});
