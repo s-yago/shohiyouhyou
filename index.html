@@ -254,7 +254,7 @@ details .in{padding:0 14px 14px}
    <div class="seg" id="segDiscS"><button data-v="0" class="on">通常</button><button data-v="5">5％OFF</button></div></div>
   <div class="fld"><label>売買契約の方法</label>
    <div class="seg" id="segBaiS"><button data-v="kami" class="on">紙</button><button data-v="denshi">電子</button></div></div>
-  <div class="fld"><label>抹消する抵当権の不動産の個数</label><div class="unit"><input type="number" id="s_kosuu" value="2" oninput="calc()"><span class="u">個</span></div><div class="note">マンションは建物＋敷地権で2個が目安</div></div>
+  <div class="fld"><label>抹消する抵当権の不動産の個数</label><div class="unit"><input type="number" id="s_kosuu" value="2" oninput="calc()"><span class="u">個</span></div><div class="note">1個あたり15,000円で計算します。抵当権がなければ0</div></div>
  </div>
  <div class="grid g4" style="margin-top:11px">
   <div class="fld"><label>住宅ローン残債（一括返済額）</label><div class="unit"><input type="number" id="s_loan" value="0" oninput="calc()"><span class="u">円</span></div></div>
@@ -264,7 +264,7 @@ details .in{padding:0 14px 14px}
  </div>
 </div></div>
 
-<div class="card sellonly" id="cardSell2"><div class="chd"><span class="no">3</span><h2>ご売却に関する諸費用</h2></div><div class="cbd">
+<div class="card sellonly" id="cardSell2"><div class="chd"><span class="no">3</span><h2>ご売却にかかる費用</h2></div><div class="cbd">
  <div class="msg w" style="font-size:12px">白い枠は自動計算です。物件によって金額が違う場合は「入力」に切り替えてください。</div>
  <div id="sellEdit"></div>
 </div></div>
@@ -554,9 +554,10 @@ function addOther(){OTHERS.push({name:'',val:''});FEESIG='';calc();
  const e=document.querySelector('#feeEdit .otname:last-of-type');if(e)e.focus();}
 function delOther(i){OTHERS.splice(i,1);FEESIG='';calc();}
 function setOther(i,k,v){if(OTHERS[i]){OTHERS[i][k]=v;calc();}}
-function setMode(k,m,auto){
+var AUTOV={};
+function setMode(k,m){
  OVM[k]=m;
- if(m==='man'&&(OVV[k]===undefined||OVV[k]===''))OVV[k]=Math.round(auto);
+ if(m==='man')OVV[k]=Math.round(AUTOV[k]||0);
  FEESIG='';calc();
  if(m==='man'){const e=$('ov_'+k);if(e){e.focus();e.select();}}}
 function setOvv(k,v){OVV[k]=v;calc();}
@@ -571,6 +572,7 @@ function syncReno(from){
  if(from==='card'&&act!==b)b.value=a.value;
  if(from==='fee'&&act!==a)a.value=b.value;}
 function buildFeeEdit(res){
+ AUTOV=Object.assign({},AUTOV,res.auto);
  const sig=PTYPE+'|'+OWNER+'|'+BAI+LOANK+'|'+OTHERS.length+'|'+Object.keys(OVM).map(k=>k+OVM[k]).join(',');
  const rowsOf=list=>list.filter(feeVisible).map(f=>{
   if(f.manual)return `<tr><td>${f.n}<span class="det">${f.hint||''}</span></td>
@@ -582,7 +584,7 @@ function buildFeeEdit(res){
    <td class="n" id="au_${f.k}" style="${man?'color:var(--soft);text-decoration:line-through':''}">${yen(res.auto[f.k]||0)}</td>
    <td style="width:96px"><div class="seg2">
      <button class="${man?'':'on'}" onclick="setMode('${f.k}','auto')">自動</button>
-     <button class="${man?'on':''}" onclick="setMode('${f.k}','man',${Math.round(res.auto[f.k]||0)})">入力</button>
+     <button class="${man?'on':''}" onclick="setMode('${f.k}','man')})">入力</button>
    </div></td>
    <td class="n" style="width:120px"><input class="ovin num" type="number" id="ov_${f.k}" ${man?'':'disabled'} value="${man?(OVV[f.k]!==undefined?OVV[f.k]:''):''}" oninput="setOvv('${f.k}',this.value)"></td></tr>`;}).join('');
  const otherRows=OTHERS.map((x,i)=>`<tr>
@@ -801,7 +803,8 @@ const SFEE=[
  {k:'s_jusho',n:'住所・氏名変更登記費用',manual:1,hint:'登記簿の住所が現住所と違う場合に必要です'},
  {k:'s_sokuryo',n:'測量費用・境界確定費用',manual:1,hint:'確定測量が必要な場合にご入力ください'},
  {k:'s_kaitai',n:'建物解体費用',manual:1,hint:'更地でお引渡しする場合にご入力ください'},
- {k:'s_clean',n:'ハウスクリーニング・残置物撤去',manual:1,hint:'お見積り金額をご入力ください'},
+ {k:'s_clean',n:'ハウスクリーニング費用',manual:1,hint:'お見積り金額をご入力ください'},
+ {k:'s_katazuke',n:'荷物等片づけ費用',manual:1,hint:'残置物の処分・運搬費用をご入力ください'},
  {k:'s_other1',n:'その他'}
 ];
 var SOTHERS=[];
@@ -820,8 +823,9 @@ function calcSell(){
  o.s_inshi=BAIS==='kami'?inshiB(price):0;
  d.s_inshi=BAIS==='kami'?'紙の契約／売買金額に応じた軽減後の税額':'電子契約のため非課税';
  const ko=Math.max(0,numv('s_kosuu'));
- o.s_masho=ko*1000+15000;d.s_masho=`登録免許税 1,000円×${ko}個 ＋ 司法書士報酬の概算`;
- ['s_jusho','s_sokuryo','s_kaitai','s_clean'].forEach(k=>{o[k]=0;d[k]='';});
+ o.s_masho=ko*15000;
+ d.s_masho=ko>0?`1個あたり15,000円 × ${ko}個（登録免許税・司法書士報酬の概算）`:'抹消する抵当権がないため0円';
+ ['s_jusho','s_sokuryo','s_kaitai','s_clean','s_katazuke'].forEach(k=>{o[k]=0;d[k]='';});
  o.s_other1=0;d.s_other1='';
  SFEE.forEach(f=>{const v=sOv(f.k);if(v!==null){o[f.k]=v;d[f.k]='';}});
  let sum=0;SFEE.forEach(f=>{if(sellVisible(f))sum+=(o[f.k]||0);});
@@ -842,6 +846,7 @@ function addSOther(){SOTHERS.push({name:'',val:''});SELLSIG='';calc();}
 function delSOther(i){SOTHERS.splice(i,1);SELLSIG='';calc();}
 function setSOther(i,k,v){if(SOTHERS[i]){SOTHERS[i][k]=v;calc();}}
 function buildSellEdit(res,auto){
+ AUTOV=Object.assign({},AUTOV,auto);
  const sig=PTYPE+'|'+SOTHERS.length+'|'+SFEE.map(f=>f.k+(OVM[f.k]||'')).join(',');
  const rows=SFEE.filter(sellVisible).map(f=>{
   if(f.manual)return `<tr><td>${f.n}<span class="det">${f.hint||''}</span></td>
@@ -853,7 +858,7 @@ function buildSellEdit(res,auto){
    <td class="n" id="au_${f.k}" style="${man?'color:var(--soft);text-decoration:line-through':''}">${yen(auto[f.k]||0)}</td>
    <td style="width:96px"><div class="seg2">
      <button class="${man?'':'on'}" onclick="setMode('${f.k}','auto')">自動</button>
-     <button class="${man?'on':''}" onclick="setMode('${f.k}','man',${Math.round(auto[f.k]||0)})">入力</button>
+     <button class="${man?'on':''}" onclick="setMode('${f.k}','man')})">入力</button>
    </div></td>
    <td class="n" style="width:120px"><input class="ovin num" type="number" id="ov_${f.k}" ${man?'':'disabled'} value="${man?(OVV[f.k]!==undefined?OVV[f.k]:''):''}" oninput="setOvv('${f.k}',this.value)"></td></tr>`;}).join('');
  const others=SOTHERS.map((x,i)=>`<tr>
@@ -877,17 +882,17 @@ function drawSellDoc(){
  const TYPEN={mansion:'マンション',kodate:'一戸建',tochi:'土地'}[PTYPE];
  const row=f=>sellVisible(f)?`<tr><td>${f.n}<span class="det">${R.d[f.k]||''}</span></td><td class="n">${yen(R.o[f.k]||0)}</td></tr>`:'';
  const memo=($('memo')&&$('memo').value||'').trim();
- let h=`<div class="sheet"><h1>ご 売 却 手 取 り 計 算 書</h1>
+ let h=`<div class="sheet"><h1>ご 売 却 収 支 計 画 書</h1>
  <div class="meta">
   <div><b>${esc($('cname').value)||'　　　　　　'}</b>　様</div>
   <div>物件名：${esc($('pname').value)||'―'}（${TYPEN}）</div>
   <div>作成日：${jpDate($('mkdate').value)}</div>
  </div>
  <div class="cols"><div>
- <h3>○ ご売却に関する諸費用</h3>
+ <h3>○ ご売却にかかる費用</h3>
  <table>${SFEE.map(row).join('')}
  ${SOTHERS.map(x=>`<tr><td>${esc(x.name)||'その他'}</td><td class="n">${yen(parseFloat(x.val)||0)}</td></tr>`).join('')}
- <tr class="sum"><td>諸費用 合計 Ａ</td><td class="n">${yen(R.sum)}</td></tr></table>
+ <tr class="sum"><td>かかる費用 合計 Ａ</td><td class="n">${yen(R.sum)}</td></tr></table>
 
  ${(R.loan>0||R.kuriage>0)?`<h3>○ 住宅ローンの一括返済</h3>
  <table>
@@ -895,29 +900,39 @@ function drawSellDoc(){
   <tr><td>繰上返済手数料</td><td class="n">${yen(R.kuriage)}</td></tr>
   <tr class="sum"><td>合計 Ｂ</td><td class="n">${yen(R.loan+R.kuriage)}</td></tr></table>`:''}
 
- <h3>○ 決済時にお受け取りいただくもの</h3>
- <table>
-  <tr class="k"><td>ご売却代金</td><td class="n">${yen(R.price)}</td></tr>
-  <tr><td>固定資産税等 清算金</td><td class="n">${yen(R.seisanTax)}</td></tr>
-  ${PTYPE==='mansion'?`<tr><td>管理費等 清算金</td><td class="n">${yen(R.seisanKanri)}</td></tr>`:''}
-  <tr class="sum"><td>お受け取り合計 Ｃ</td><td class="n">${yen(R.income)}</td></tr>
- </table>
-
  </div><div>
 
- <h3>○ お手取り額</h3>
+ <h3>○ ご売却で受け取るお金</h3>
  <table>
-  <tr class="k"><td>お受け取り合計（Ｃ）</td><td class="n">${yen(R.income)}</td></tr>
-  <tr class="k"><td>諸費用（Ａ）</td><td class="n">− ${yen(R.sum)}</td></tr>
-  ${(R.loan+R.kuriage)>0?`<tr class="k"><td>ローン一括返済（Ｂ）</td><td class="n">− ${yen(R.loan+R.kuriage)}</td></tr>`:''}
-  <tr class="big"><td>ご売却後のお手取り額</td><td class="n">${yen(R.tedori)}</td></tr>
+  <tr class="k"><td>ご売却価格</td><td class="n">${yen(R.price)}</td></tr>
+  <tr><td>固定資産税等 清算金</td><td class="n">${yen(R.seisanTax)}</td></tr>
+  ${PTYPE==='mansion'?`<tr><td>管理費等 清算金</td><td class="n">${yen(R.seisanKanri)}</td></tr>`:''}
+  <tr class="sum"><td>受け取る金額 合計 Ｃ</td><td class="n">${yen(R.income)}</td></tr>
  </table>
+
+ <h3>○ ご売却後のお手取り額</h3>
+ <table>
+  <tr class="k"><td>受け取る金額（Ｃ）</td><td class="n">${yen(R.income)}</td></tr>
+  <tr class="k"><td>かかる費用（Ａ）</td><td class="n">− ${yen(R.sum)}</td></tr>
+  ${(R.loan+R.kuriage)>0?`<tr class="k"><td>ローン一括返済（Ｂ）</td><td class="n">− ${yen(R.loan+R.kuriage)}</td></tr>`:''}
+  <tr class="big"><td>お手取り額</td><td class="n">${yen(R.tedori)}</td></tr>
+ </table>
+ <h3>○ 譲渡所得税について</h3>
+ <div class="fine" style="margin-top:0">
+  ご売却で利益が出た場合、翌年に譲渡所得税・住民税がかかることがあります。<br>
+  <b>譲渡所得 ＝ ご売却価格 −（取得費 ＋ 譲渡費用）</b><br>
+  ・<b>取得費</b>…ご購入時の価格と諸費用。建物は減価償却後の価額になります。購入時の資料がない場合は、売却価格の5％を取得費とみなす方法があります。<br>
+  ・<b>譲渡費用</b>…仲介手数料、印紙代、測量費、解体費など、売却のために直接かかった費用です。<br>
+  税率は、売却した年の1月1日時点の所有期間で決まります。<b>5年超は20.315％</b>、<b>5年以下は39.63％</b>（いずれも所得税・復興特別所得税・住民税の合計）です。<br>
+  お住まいだった住宅の売却には、<b>3,000万円の特別控除</b>、所有10年超の<b>軽減税率の特例</b>、<b>買換えの特例</b>、売却損が出たときの<b>損益通算・繰越控除</b>などの制度があります。要件があり併用できないものもあります。<br>
+  <b>当社では税額の計算や特例適用の判定は行っておりません。</b>実際の税額は税理士または所轄の税務署にご確認ください。
+ </div>
  ${R.tedori<0?`<div class="fine" style="color:#9A3323;font-weight:700">お手取りがマイナスになります。ご売却代金だけではローンを完済できないため、不足分のご準備か、任意売却等のご相談が必要です。</div>`:''}
 
  <div class="fine" style="margin-top:7px;border-top:1px solid #C6CCD8;padding-top:5px">
-  ・固定資産税等・管理費等の清算金は、決済日を基準に日割で計算します。上記は概算です。<br>
+  ・本書はお申込みをいただいた時点での概算です。ご契約・お引渡しまでに金額が変わることがあります。<br>
+  ・固定資産税等・管理費等の清算金は、お引渡し日を基準に日割で計算します。上記は概算です。<br>
   ・お引渡し日付での火災保険の解約手続きをお願いします。長期契約の場合は解約返戻金があります。<br>
-  ・ご売却益が出た場合、翌年に譲渡所得税・住民税がかかることがあります。3,000万円の特別控除など軽減の制度もありますので、別途ご相談ください。<br>
   ・登記費用・測量費用などは概算です。実額は見積・精算書によります。<br>
   ・本書は概算であり、税額や費用をお約束するものではありません。
  </div>
@@ -940,7 +955,10 @@ function applyMode(){
  document.querySelectorAll('.sellonly').forEach(e=>e.style.display=MODE==='sell'?'':'none');
  ['cardBuy2','cardBuy3','cardLoan','cardBuy4','cardBuy5'].forEach(id=>{const e=$(id);if(e)e.style.display=MODE==='sell'?'none':'';});
  document.querySelectorAll('.mansionS').forEach(e=>e.style.display=PTYPE==='mansion'?'':'none');
- $('wrapBuyOnly').style.display=MODE==='sell'?'none':'';
+ $('wrapBuyOnly').style.display=MODE==='sell'?'none':'contents';
+ const dt=document.querySelector('.wrap>details');if(dt)dt.style.display=MODE==='sell'?'none':'';
+ const lb=[...document.querySelectorAll('.fld label')].find(x=>/決済予定日/.test(x.textContent));
+ if(lb)lb.textContent=MODE==='sell'?'決済予定日':'決済予定日（返済開始の起点）';
  calc();}
 
 /* ===== 案件の保存・読込 ===== */
@@ -998,7 +1016,7 @@ function applySeg(){
  document.querySelectorAll('.mansion').forEach(e=>e.style.display=PTYPE==='mansion'?'':'none');
  $('wrapTaxb').style.display=OWNER==='hojin'?'':'none';
  $('segPay').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===PAY));
- $('cardLoan').style.display=isLoan()?'':'none';
+ $('cardLoan').style.display=(MODE!=='sell'&&isLoan())?'':'none';
  $('wrapSegLoan').style.display=isLoan()?'':'none';
  $('optLoanOnly').style.display=isLoan()?'':'none';
  if(OWNER!=='hojin'&&$('taxbld'))$('taxbld').value=0;
