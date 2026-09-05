@@ -584,7 +584,7 @@ function buildFeeEdit(res){
    <td class="n" id="au_${f.k}" style="${man?'color:var(--soft);text-decoration:line-through':''}">${yen(res.auto[f.k]||0)}</td>
    <td style="width:96px"><div class="seg2">
      <button class="${man?'':'on'}" onclick="setMode('${f.k}','auto')">自動</button>
-     <button class="${man?'on':''}" onclick="setMode('${f.k}','man')})">入力</button>
+     <button class="${man?'on':''}" onclick="setMode('${f.k}','man')">入力</button>
    </div></td>
    <td class="n" style="width:120px"><input class="ovin num" type="number" id="ov_${f.k}" ${man?'':'disabled'} value="${man?(OVV[f.k]!==undefined?OVV[f.k]:''):''}" oninput="setOvv('${f.k}',this.value)"></td></tr>`;}).join('');
  const otherRows=OTHERS.map((x,i)=>`<tr>
@@ -858,7 +858,7 @@ function buildSellEdit(res,auto){
    <td class="n" id="au_${f.k}" style="${man?'color:var(--soft);text-decoration:line-through':''}">${yen(auto[f.k]||0)}</td>
    <td style="width:96px"><div class="seg2">
      <button class="${man?'':'on'}" onclick="setMode('${f.k}','auto')">自動</button>
-     <button class="${man?'on':''}" onclick="setMode('${f.k}','man')})">入力</button>
+     <button class="${man?'on':''}" onclick="setMode('${f.k}','man')">入力</button>
    </div></td>
    <td class="n" style="width:120px"><input class="ovin num" type="number" id="ov_${f.k}" ${man?'':'disabled'} value="${man?(OVV[f.k]!==undefined?OVV[f.k]:''):''}" oninput="setOvv('${f.k}',this.value)"></td></tr>`;}).join('');
  const others=SOTHERS.map((x,i)=>`<tr>
