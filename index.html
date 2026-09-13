@@ -176,7 +176,8 @@ details .in{padding:0 14px 14px}
 <!-- 2 金額 -->
 <div class="card" id="cardBuy2"><div class="chd"><span class="no">2</span><h2>金額</h2></div><div class="cbd">
  <div class="grid g4">
-  <div class="fld"><label>売買金額（税込）</label><div class="unit"><input type="number" id="price" value="20000000" oninput="calc()"><span class="u">円</span></div></div>
+  <div class="fld"><label id="lbPrice">売買金額（非課税）</label><div class="unit"><input type="number" id="price" value="20000000" oninput="calc()"><span class="u">円</span></div>
+   <div class="seg" id="segTax" style="margin-top:5px"><button data-v="hikazei" class="on">非課税</button><button data-v="komi">税込</button></div></div>
   <div class="fld" id="wrapTaxb"><label>うち建物消費税額</label><div class="unit"><input type="number" id="taxbld" value="0" oninput="calc()"><span class="u">円</span></div><div class="note">仲介手数料は税抜価格で計算します</div></div>
   <div class="fld"><label>リノベーション工事費（予備費含む・税込）</label><div class="unit"><input type="number" id="reno" value="0" oninput="calc()"><span class="u">円</span></div></div>
   <div class="fld"><label>自己資金</label><div class="unit"><input type="number" id="jiko" value="0" oninput="calc()"><span class="u">円</span></div></div>
@@ -249,7 +250,8 @@ details .in{padding:0 14px 14px}
 <!-- 売主用 -->
 <div class="card sellonly" id="cardSell1"><div class="chd"><span class="no">2</span><h2>ご売却の条件</h2></div><div class="cbd">
  <div class="grid g4">
-  <div class="fld"><label>ご売却価格（税込）</label><div class="unit"><input type="number" id="s_price" value="20000000" oninput="calc()"><span class="u">円</span></div></div>
+  <div class="fld"><label id="lbSPrice">ご売却価格（非課税）</label><div class="unit"><input type="number" id="s_price" value="20000000" oninput="calc()"><span class="u">円</span></div>
+   <div class="seg" id="segTaxS" style="margin-top:5px"><button data-v="hikazei" class="on">非課税</button><button data-v="komi">税込</button></div></div>
   <div class="fld"><label>仲介手数料の割引</label>
    <div class="seg" id="segDiscS"><button data-v="0" class="on">通常</button><button data-v="5">5％OFF</button></div></div>
   <div class="fld"><label>売買契約の方法</label>
@@ -395,7 +397,8 @@ const inshiB=p=>p<=1e6?500:p<=5e6?1000:p<=1e7?5000:p<=5e7?10000:30000;
 const inshiK=p=>p<=5e6?2000:p<=1e7?10000:p<=5e7?20000:60000;
 const inshiU=p=>p<=2e6?200:p<=3e6?500:p<=5e6?1000:p<=1e7?5000:p<=5e7?10000:30000;
 const hoshoAdj=(b,y)=>b*(y<=20?.72:y<=25?.845:y<=30?.927:y<=35?1:y<=40?1.07:1.13);
-var PTYPE='mansion',OWNER='ko',DISC=0,BAI='kami',LOANK='kami',PAY='loan';
+var PTYPE='mansion',OWNER='ko',DISC=0,BAI='kami',LOANK='kami',PAY='loan',TAXD='hikazei',TAXDS='hikazei';
+const taxLabel=v=>v==='komi'?'税込':'非課税';
 const isLoan=()=>PAY==='loan';
 var OVM={},OVV={};   /* 項目ごとの 自動/入力 と、その入力値 */
 
@@ -663,7 +666,7 @@ function drawDoc(ar,R){
 
  <h3>○ 資金計画</h3>
  <table>
-  <tr class="k"><td>売買代金</td><td class="n">${yen(price)}</td></tr>
+  <tr class="k"><td>売買代金（${taxLabel(TAXD)}）</td><td class="n">${yen(price)}</td></tr>
   ${renoVisible()?`<tr class="k"><td>リノベーション工事（Ｃ）</td><td class="n">${yen(reno+ar.sumR)}</td></tr>`:''}
   <tr class="k"><td>諸費用合計（${isLoan()?'Ａ＋Ｂ':'Ａ'}）</td><td class="n">${yen(ar.sumA+sumB)}</td></tr>
   <tr class="hl"><td>お支払い総額</td><td class="n">${yen(total)}</td></tr>
@@ -904,7 +907,7 @@ function drawSellDoc(){
 
  <h3>○ ご売却で受け取るお金</h3>
  <table>
-  <tr class="k"><td>ご売却価格</td><td class="n">${yen(R.price)}</td></tr>
+  <tr class="k"><td>ご売却価格（${taxLabel(TAXDS)}）</td><td class="n">${yen(R.price)}</td></tr>
   <tr><td>固定資産税等 清算金</td><td class="n">${yen(R.seisanTax)}</td></tr>
   ${PTYPE==='mansion'?`<tr><td>管理費等 清算金</td><td class="n">${yen(R.seisanKanri)}</td></tr>`:''}
   <tr class="sum"><td>受け取る金額 合計 Ｃ</td><td class="n">${yen(R.income)}</td></tr>
@@ -966,13 +969,13 @@ const SKEY='vivi_shohiyo_cases';
 const FIELDS=['pname','cname','tantoSel','tanto','mkdate','sdate','price','taxbld','reno','jiko','tax','kanri','shuzen','parking','nensyu','shutoku','memo','s_price','s_kosuu','s_loan','s_kuriage','s_tax','s_kanri'];
 const OPTS=['optCmp','optRatio','optKojo','optSch'];
 const SELS=['mascotMode'];
-function snap(){const d={ptype:PTYPE,owner:OWNER,disc:DISC,pay:PAY,bai:BAI,loank:LOANK,mode:MODE,discs:DISCS,bais:BAIS,sothers:JSON.parse(JSON.stringify(SOTHERS)),others:JSON.parse(JSON.stringify(OTHERS)),plans:JSON.parse(JSON.stringify(PLANS)),f:{},op:{},ovm:OVM,ovv:OVV};
+function snap(){const d={ptype:PTYPE,owner:OWNER,disc:DISC,pay:PAY,bai:BAI,loank:LOANK,taxd:TAXD,taxds:TAXDS,mode:MODE,discs:DISCS,bais:BAIS,sothers:JSON.parse(JSON.stringify(SOTHERS)),others:JSON.parse(JSON.stringify(OTHERS)),plans:JSON.parse(JSON.stringify(PLANS)),f:{},op:{},ovm:OVM,ovv:OVV};
  FIELDS.forEach(k=>d.f[k]=$(k)?$(k).value:'');
  OPTS.forEach(k=>d.op[k]=chk(k));
  SELS.forEach(k=>{if($(k))d.f[k]=$(k).value;});
  return d;}
 function restore(d){
- PTYPE=d.ptype||'mansion';OWNER=d.owner||'ko';DISC=d.disc||0;BAI=d.bai||'kami';LOANK=d.loank||'kami';PAY=d.pay||'loan';MODE=d.mode||'buy';DISCS=d.discs||0;BAIS=d.bais||'kami';SOTHERS=d.sothers||[];SELLSIG='';
+ PTYPE=d.ptype||'mansion';OWNER=d.owner||'ko';DISC=d.disc||0;BAI=d.bai||'kami';LOANK=d.loank||'kami';PAY=d.pay||'loan';TAXD=d.taxd||'hikazei';TAXDS=d.taxds||'hikazei';MODE=d.mode||'buy';DISCS=d.discs||0;BAIS=d.bais||'kami';SOTHERS=d.sothers||[];SELLSIG='';
  OVM=d.ovm||{};OVV=d.ovv||{};OTHERS=d.others||[];FEESIG='';
  PLANS=d.plans||PLANS;
  FIELDS.concat(SELS).forEach(k=>{if($(k)&&(d.f||{})[k]!==undefined)$(k).value=d.f[k];});
@@ -1015,6 +1018,10 @@ function applySeg(){
   +(isLoan()?`　／　金銭消費貸借契約：${LOANK==='kami'?'紙（借入金額に応じた印紙代）':'電子（印紙代なし・手数料5,500円）'}`:'　／　現金購入のため金銭消費貸借契約はありません');
  document.querySelectorAll('.mansion').forEach(e=>e.style.display=PTYPE==='mansion'?'':'none');
  $('wrapTaxb').style.display=OWNER==='hojin'?'':'none';
+ $('segTax').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===TAXD));
+ $('segTaxS').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===TAXDS));
+ $('lbPrice').textContent='売買金額（'+taxLabel(TAXD)+'）';
+ $('lbSPrice').textContent='ご売却価格（'+taxLabel(TAXDS)+'）';
  $('segPay').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===PAY));
  $('cardLoan').style.display=(MODE!=='sell'&&isLoan())?'':'none';
  $('wrapSegLoan').style.display=isLoan()?'':'none';
@@ -1027,7 +1034,10 @@ function applySeg(){
  $('typeNote').textContent=(a||'')+b;}
 $('segType').querySelectorAll('button').forEach(b=>b.onclick=()=>{PTYPE=b.dataset.v;FEESIG='';SELLSIG='';applySeg();
  document.querySelectorAll('.mansionS').forEach(e=>e.style.display=PTYPE==='mansion'?'':'none');calc();});
-$('segOwner').querySelectorAll('button').forEach(b=>b.onclick=()=>{OWNER=b.dataset.v;FEESIG='';applySeg();calc();});
+$('segOwner').querySelectorAll('button').forEach(b=>b.onclick=()=>{OWNER=b.dataset.v;
+ TAXD=OWNER==='hojin'?'komi':'hikazei';FEESIG='';applySeg();calc();});
+$('segTax').querySelectorAll('button').forEach(b=>b.onclick=()=>{TAXD=b.dataset.v;applySeg();calc();});
+$('segTaxS').querySelectorAll('button').forEach(b=>b.onclick=()=>{TAXDS=b.dataset.v;applySeg();calc();});
 $('segDisc').querySelectorAll('button').forEach(b=>b.onclick=()=>{DISC=+b.dataset.v;applySeg();calc();});
 $('segBai').querySelectorAll('button').forEach(b=>b.onclick=()=>{BAI=b.dataset.v;FEESIG='';applySeg();calc();});
 $('segLoan').querySelectorAll('button').forEach(b=>b.onclick=()=>{LOANK=b.dataset.v;FEESIG='';applySeg();calc();});
