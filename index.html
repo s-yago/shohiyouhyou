@@ -54,6 +54,9 @@ input:focus,select:focus{outline:2px solid var(--navy-l);outline-offset:-1px}
 .seg button{flex:1;padding:7px 4px;background:#fff;border:0;border-right:1px solid var(--line);font-size:12px;cursor:pointer;font-family:inherit;color:var(--mid)}
 .seg button:last-child{border-right:0}
 .seg button.on{background:var(--navy);color:#fff;font-weight:700}
+.paybox{border:1px solid var(--line-s);border-radius:8px;padding:10px 12px;background:#FAFBFD}
+.paybox.cash{border-color:var(--warn-ln);background:var(--warn-bg)}
+.paybox.cash .seg button.on{background:var(--orange-d)}
 .seg2{display:inline-flex;border:1px solid var(--line-s);border-radius:5px;overflow:hidden}
 .seg2 button{padding:2px 9px;background:#fff;border:0;border-right:1px solid var(--line);font-size:11px;cursor:pointer;font-family:inherit;color:var(--mid);line-height:1.6}
 .seg2 button:last-child{border-right:0}
@@ -151,12 +154,15 @@ details .in{padding:0 14px 14px}
     <button data-v="hojin">法人物件（課税事業者）</button>
    </div>
   </div>
-  <div class="fld"><label>お支払いの方法</label>
-   <div class="seg" id="segPay">
-    <button data-v="loan" class="on">住宅ローンを利用</button>
-    <button data-v="cash">現金でご購入</button>
-   </div>
-  </div></div>
+  </div>
+ </div>
+ <div class="fld paybox" id="payBox" style="margin-bottom:11px">
+  <label style="font-size:12.5px">住宅ローンの利用　<span style="font-weight:400;color:var(--soft)">再建築不可・接道義務違反などでローンが使えない物件は「現金のみ」を選んでください</span></label>
+  <div class="seg" id="segPay" style="max-width:460px">
+   <button data-v="loan" class="on">住宅ローンを利用する</button>
+   <button data-v="cash">現金のみ（ローン利用なし）</button>
+  </div>
+  <div class="note" id="payNote" style="margin-top:6px"></div>
  </div>
  <div class="note" id="typeNote" style="margin-top:0;margin-bottom:11px"></div>
  <div class="grid g3">
@@ -180,7 +186,7 @@ details .in{padding:0 14px 14px}
    <div class="seg" id="segTax" style="margin-top:5px"><button data-v="hikazei" class="on">非課税</button><button data-v="komi">税込</button></div></div>
   <div class="fld" id="wrapTaxb"><label>うち建物消費税額</label><div class="unit"><input type="number" id="taxbld" value="0" oninput="calc()"><span class="u">円</span></div><div class="note">仲介手数料は税抜価格で計算します</div></div>
   <div class="fld"><label>リノベーション工事費（予備費含む・税込）</label><div class="unit"><input type="number" id="reno" value="0" oninput="calc()"><span class="u">円</span></div></div>
-  <div class="fld"><label>自己資金</label><div class="unit"><input type="number" id="jiko" value="0" oninput="calc()"><span class="u">円</span></div></div>
+  <div class="fld" id="wrapJiko"><label>自己資金</label><div class="unit"><input type="number" id="jiko" value="0" oninput="calc()"><span class="u">円</span></div></div>
  </div>
  <div class="grid g4" style="margin-top:11px">
   <div class="fld"><label>固定資産税等 年額</label><div class="unit"><input type="number" id="tax" value="60000" oninput="calc()"><span class="u">円/年</span></div></div>
@@ -1023,6 +1029,11 @@ function applySeg(){
  $('lbPrice').textContent='売買金額（'+taxLabel(TAXD)+'）';
  $('lbSPrice').textContent='ご売却価格（'+taxLabel(TAXDS)+'）';
  $('segPay').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===PAY));
+ $('wrapJiko').style.display=isLoan()?'':'none';
+ $('payBox').classList.toggle('cash',!isLoan());
+ $('payNote').innerHTML=isLoan()
+  ?'借入に関する諸費用（保証料・事務手数料・抵当権設定費用など）を計上します。'
+  :'<b>現金購入用の諸費用表を作成します。</b>保証料・事務手数料・抵当権設定費用・金銭消費貸借契約の印紙代は計上されません。';
  $('cardLoan').style.display=(MODE!=='sell'&&isLoan())?'':'none';
  $('wrapSegLoan').style.display=isLoan()?'':'none';
  $('optLoanOnly').style.display=isLoan()?'':'none';
